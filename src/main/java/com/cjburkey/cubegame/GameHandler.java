@@ -1,6 +1,7 @@
 package com.cjburkey.cubegame;
 
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
 import com.cjburkey.cubegame.mesh.MeshBasic;
 
@@ -21,6 +22,7 @@ public class GameHandler {
 	};
 	
 	private MeshBasic mesh = new MeshBasic();
+	private boolean wireFrame = false;
 	
 	public void preinit() {
 		voxelShader = new ShaderProgram();
@@ -37,7 +39,10 @@ public class GameHandler {
 	}
 	
 	public void update() {
-		
+		if (Input.getOnKeyDown(GLFW.GLFW_KEY_Q)) {
+			Debug.log(((wireFrame) ? "Disabling" : "Enabling") + " wireframe");
+			CubeGame.getWindow().setWireframe(wireFrame = !wireFrame);
+		}
 	}
 	
 	public void render() {

@@ -76,6 +76,7 @@ public final class CubeGame {
 	
 	// Called once every frame, used to handle physics and non-rendering functions
 	private static void update() {
+		Input._onLateUpdateInternal();
 		window.pollEvents();
 		
 		// Show the Delta time and FPS in the window title and update it every 1/10th of a second

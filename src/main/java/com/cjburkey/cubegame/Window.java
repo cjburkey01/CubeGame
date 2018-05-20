@@ -64,6 +64,17 @@ public final class Window {
 			glViewport(0, 0, w, h);
 		});
 		
+		// Handle input with the "Input" class
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			if (action == GLFW_PRESS) {
+				Input._onKeyPressInternal(key);
+			} else if (action == GLFW_RELEASE) {
+				Input._onKeyReleaseInternal(key);
+			}
+		});
+		
+		setWireframe(false);
+		
 		// Make this window functional
 		valid = true;
 	}
@@ -71,6 +82,10 @@ public final class Window {
 	// Checks whether this window/GLFW has been fully initialized
 	public boolean isValidWindow() {
 		return valid;
+	}
+	
+	public void setWireframe(boolean wireframe) {
+		glPolygonMode(GL_FRONT_AND_BACK, (wireframe) ? GL_LINE : GL_FILL);
 	}
 	
 	// Shows the window

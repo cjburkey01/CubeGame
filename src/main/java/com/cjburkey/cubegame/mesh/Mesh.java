@@ -6,6 +6,9 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import org.joml.Vector3f;
 import com.cjburkey.cubegame.BufferUtil;
+import com.cjburkey.cubegame.ShaderProgram;
+import com.cjburkey.cubegame.object.Camera;
+import com.cjburkey.cubegame.object.Transform;
 
 public abstract class Mesh {
 	
@@ -48,13 +51,18 @@ public abstract class Mesh {
 		glBindVertexArray(0);
 	}
 	
-	public final void render() {
+	public final void render(Transform transformation) {
+		bindShader();
+		if (ShaderProgram.getCurrentShader() != null && ShaderProgram.getCurrentShader().transforms && transformation != null && Camera.getMainCamera() != null) {
+			ShaderProgram.getCurrentShader().setUniform("modelViewMatrix", Camera.getMainCamera().getModelViewMatrix(transformation));
+		}
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		customPreRender();
 		customRender();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+		unbindShader();
 	}
 	
 	// Override if there is a custom rendering behavior
@@ -72,6 +80,12 @@ public abstract class Mesh {
 	
 	// Add data to custom buffers
 	protected void bufferAndInitData() {
+	}
+	
+	protected void bindShader() {
+	}
+	
+	protected void unbindShader() {
 	}
 	
 	public final boolean getHasInit() {

@@ -3,21 +3,31 @@ package com.cjburkey.cubegame;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
+import com.cjburkey.cubegame.object.Camera;
 
 public final class ShaderProgram {
+	
+	private static ShaderProgram currentShader;
+	private static final List<ShaderProgram> linkedShaders = new ArrayList<>();
 	
 	private int program = 0;
 	private final Map<Integer, Integer> shaders = new HashMap<>();	// Store shaders in a map to prevent multiple shaders of the same type (<Type, Shader>)
 	private final Map<String, Integer> uniforms = new HashMap<>();
 	private boolean valid = false;
 	
-	public ShaderProgram() {
+	public final boolean transforms;
+	
+	public ShaderProgram(boolean transforms) {
+		this.transforms = transforms;
+		
 		// Create the shader program
 		program = glCreateProgram();
 		if (program == NULL) {
@@ -129,6 +139,12 @@ public final class ShaderProgram {
 			glDeleteShader(shader.getValue());
 		}
 		shaders.clear();
+		
+		linkedShaders.add(this);
+		if (transforms) {
+			addUniform("projectionMatrix");
+			addUniform("modelViewMatrix");
+		}
 	}
 	
 	public void destroy() {
@@ -138,10 +154,23 @@ public final class ShaderProgram {
 	
 	public void bind() {
 		glUseProgram(program);
+		currentShader = this;
+		if (Camera.getMainCamera() != null) {
+			setUniform("projectionMatrix", Camera.getMainCamera().getProjectionMatrix());
+		}
 	}
 	
 	public static void unbind() {
 		glUseProgram(0);
+		currentShader = null;
+	}
+	
+	public static ShaderProgram getCurrentShader() {
+		return currentShader;
+	}
+	
+	public static ShaderProgram[] getLinkedShaders() {
+		return linkedShaders.toArray(new ShaderProgram[0]);
 	}
 
 	public int hashCode() {

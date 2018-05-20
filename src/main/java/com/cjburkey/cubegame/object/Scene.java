@@ -2,10 +2,10 @@ package com.cjburkey.cubegame.object;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.cjburkey.cubegame.event.EventGameRender;
-import com.cjburkey.cubegame.event.EventGameUpdate;
 import com.cjburkey.cubegame.event.EventHandler;
 import com.cjburkey.cubegame.event.EventListener;
+import com.cjburkey.cubegame.event.game.EventGameRender;
+import com.cjburkey.cubegame.event.game.EventGameUpdate;
 
 @EventListener
 public final class Scene {
@@ -25,7 +25,7 @@ public final class Scene {
 	}
 	
 	@EventHandler
-	private static void _onUpdateInternal(EventGameUpdate e) {
+	private static void onUpdate(EventGameUpdate e) {
 		updateObjects();
 		for (GameObject objectInScene : objectsInScene) {
 			objectInScene.onUpdate();
@@ -33,7 +33,10 @@ public final class Scene {
 	}
 	
 	@EventHandler
-	private static void _onRenderInternal(EventGameRender e) {
+	private static void onRender(EventGameRender e) {
+		if (Camera.getMainCamera() == null) {
+			return;
+		}
 		for (GameObject objectInScene : objectsInScene) {
 			objectInScene.onRender();
 		}

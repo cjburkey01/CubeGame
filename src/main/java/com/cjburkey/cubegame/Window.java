@@ -9,6 +9,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
+import com.cjburkey.cubegame.event.EventSystem;
+import com.cjburkey.cubegame.event.window.EventWindowResize;
 
 // Wrapper for GLFW windows
 public final class Window {
@@ -62,7 +64,13 @@ public final class Window {
 		glfwSetFramebufferSizeCallback(window, (win, w, h) -> {
 			size.set(w, h);
 			glViewport(0, 0, w, h);
+			EventSystem.MAIN_HANDLER.triggerEvent(new EventWindowResize(this, w, h));
 		});
+		
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CCW);
+		glCullFace(GL_BACK);
 		
 		setWireframe(false);
 		

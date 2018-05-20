@@ -1,11 +1,11 @@
 package com.cjburkey.cubegame;
 
-import com.cjburkey.cubegame.event.EventGameExit;
-import com.cjburkey.cubegame.event.EventGameInit;
-import com.cjburkey.cubegame.event.EventGamePreInit;
-import com.cjburkey.cubegame.event.EventGameRender;
-import com.cjburkey.cubegame.event.EventGameUpdate;
 import com.cjburkey.cubegame.event.EventSystem;
+import com.cjburkey.cubegame.event.game.EventGameExit;
+import com.cjburkey.cubegame.event.game.EventGameInit;
+import com.cjburkey.cubegame.event.game.EventGamePreInit;
+import com.cjburkey.cubegame.event.game.EventGameRender;
+import com.cjburkey.cubegame.event.game.EventGameUpdate;
 
 public final class CubeGame {
 	

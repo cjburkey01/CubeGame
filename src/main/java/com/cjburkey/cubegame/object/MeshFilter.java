@@ -8,7 +8,7 @@ public class MeshFilter extends Component {
 	
 	public void onRender() {
 		if (mesh != null && mesh.getHasInit()) {
-			mesh.render();
+			mesh.render(parent.transform);
 		}
 	}
 	

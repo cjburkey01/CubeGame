@@ -4,11 +4,20 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class FileUtil {
 	
-	// Reads an entire file's lines and returns them in an array of strings
+	// Reads an entire file's lines and returns them in anarray of strings
 	public static String[] readFileLines(String path) {
+		// Sanitize the supplied path
+		path.replaceAll(Pattern.quote("\\"), "/");
+		while(path.startsWith("/")) {
+			path = path.substring(1, path.length() - 1);
+		}
+		path = "/" + path;
+		
+		// Read the file
 		List<String> out = new ArrayList<>();
 		BufferedReader reader = null;
 		try {

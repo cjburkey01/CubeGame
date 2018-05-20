@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import com.cjburkey.cubegame.event.EventGamePreInit;
 import com.cjburkey.cubegame.event.EventHandler;
 import com.cjburkey.cubegame.event.EventListener;
+import com.cjburkey.cubegame.event.game.EventGamePreInit;
 
 @EventListener
 public final class Input {

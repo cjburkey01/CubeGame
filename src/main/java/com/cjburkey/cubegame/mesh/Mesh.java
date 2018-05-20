@@ -74,4 +74,48 @@ public abstract class Mesh {
 	protected void bufferAndInitData() {
 	}
 	
+	public final boolean getHasInit() {
+		return hasInit;
+	}
+
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ebo;
+		result = prime * result + (hasInit ? 1231 : 1237);
+		result = prime * result + inds;
+		result = prime * result + vao;
+		result = prime * result + vbo;
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Mesh other = (Mesh) obj;
+		if (ebo != other.ebo) {
+			return false;
+		}
+		if (hasInit != other.hasInit) {
+			return false;
+		}
+		if (inds != other.inds) {
+			return false;
+		}
+		if (vao != other.vao) {
+			return false;
+		}
+		if (vbo != other.vbo) {
+			return false;
+		}
+		return true;
+	}
+	
 }

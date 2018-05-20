@@ -239,5 +239,49 @@ public final class Window {
 		GLFWVidMode vidMode = glfwGetVideoMode(monitor);
 		return new Vector2i(vidMode.width(), vidMode.height());
 	}
+
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((size == null) ? 0 : size.hashCode());
+		result = prime * result + (valid ? 1231 : 1237);
+		result = prime * result + (int) (window ^ (window >>> 32));
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Window other = (Window) obj;
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (size == null) {
+			if (other.size != null) {
+				return false;
+			}
+		} else if (!size.equals(other.size)) {
+			return false;
+		}
+		if (valid != other.valid) {
+			return false;
+		}
+		if (window != other.window) {
+			return false;
+		}
+		return true;
+	}
 	
 }

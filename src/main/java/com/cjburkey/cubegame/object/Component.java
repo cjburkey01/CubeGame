@@ -14,4 +14,18 @@ public abstract class Component {
 	public void onRemove() {
 	}
 	
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
+		if (!other.getClass().equals(getClass())) {
+			return false;
+		}
+		return other == this;
+	}
+	
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
 }

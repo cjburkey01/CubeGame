@@ -88,5 +88,41 @@ public final class ShaderProgram {
 	public static void unbind() {
 		glUseProgram(0);
 	}
+
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + program;
+		result = prime * result + ((shaders == null) ? 0 : shaders.hashCode());
+		result = prime * result + (valid ? 1231 : 1237);
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ShaderProgram other = (ShaderProgram) obj;
+		if (program != other.program) {
+			return false;
+		}
+		if (shaders == null) {
+			if (other.shaders != null) {
+				return false;
+			}
+		} else if (!shaders.equals(other.shaders)) {
+			return false;
+		}
+		if (valid != other.valid) {
+			return false;
+		}
+		return true;
+	}
 	
 }

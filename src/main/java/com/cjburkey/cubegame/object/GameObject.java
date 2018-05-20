@@ -6,6 +6,8 @@ import com.cjburkey.cubegame.Debug;
 
 public final class GameObject {
 	
+	private String name = "";
+	
 	private final List<Component> components = new ArrayList<>();
 	private final List<Component> componentsToAdd = new ArrayList<>();
 	private final List<Component> componentsToRemove = new ArrayList<>();
@@ -73,6 +75,74 @@ public final class GameObject {
 	
 	public Component[] getComponents() {
 		return components.toArray(new Component[0]);
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((components == null) ? 0 : components.hashCode());
+		result = prime * result + ((componentsToAdd == null) ? 0 : componentsToAdd.hashCode());
+		result = prime * result + ((componentsToRemove == null) ? 0 : componentsToRemove.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((transform == null) ? 0 : transform.hashCode());
+		return result;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		GameObject other = (GameObject) obj;
+		if (components == null) {
+			if (other.components != null) {
+				return false;
+			}
+		} else if (!components.equals(other.components)) {
+			return false;
+		}
+		if (componentsToAdd == null) {
+			if (other.componentsToAdd != null) {
+				return false;
+			}
+		} else if (!componentsToAdd.equals(other.componentsToAdd)) {
+			return false;
+		}
+		if (componentsToRemove == null) {
+			if (other.componentsToRemove != null) {
+				return false;
+			}
+		} else if (!componentsToRemove.equals(other.componentsToRemove)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (transform == null) {
+			if (other.transform != null) {
+				return false;
+			}
+		} else if (!transform.equals(other.transform)) {
+			return false;
+		}
+		return true;
 	}
 	
 }

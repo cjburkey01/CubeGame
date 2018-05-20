@@ -40,7 +40,7 @@ public class GameHandler {
 	
 	public void update() {
 		if (Input.getOnKeyDown(GLFW.GLFW_KEY_Q)) {
-			Debug.log(((wireFrame) ? "Disabling" : "Enabling") + " wireframe");
+			Debug.log("{} wireframe", ((wireFrame) ? "Disabling" : "Enabling"));
 			CubeGame.getWindow().setWireframe(wireFrame = !wireFrame);
 		}
 	}

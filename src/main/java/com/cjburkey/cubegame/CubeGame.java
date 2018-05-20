@@ -1,5 +1,7 @@
 package com.cjburkey.cubegame;
 
+import com.cjburkey.cubegame.object.Scene;
+
 public final class CubeGame {
 	
 	private static boolean running;
@@ -14,6 +16,7 @@ public final class CubeGame {
 	// Be sure to have the VM arg "-XstartOnFirstThread" set for macOS or else GLFW will throw a fit (it's safest to use it on all platforms: Windows, Linux, etc, and not only macOS)
 	public static void main(String[] args) {
 		Debug.setDefaultThreadError();	// Sets the default error handling procedure for unhandled exceptions
+		Debug.log("Loading");
 		startGameLoop();
 	}
 	
@@ -86,6 +89,7 @@ public final class CubeGame {
 			window.setName("CubeGame 0.0.1 | Delta Time: " + Debug.formatDecimal(deltaTime, 6) + " | Estimated FPS: " + Debug.formatDecimal(fps, 0));
 		}
 		
+		Scene._onUpdateInternal();
 		gameHandler.update();
 		
 		// Check whether the user pressed the X button on the window, and if so, begin the exit process after this frame finishes
@@ -99,6 +103,7 @@ public final class CubeGame {
 		// Clear the current buffer
 		window.clearBuffer();
 		
+		Scene._onRenderInternal();
 		gameHandler.render();
 		
 		// Show the current buffer

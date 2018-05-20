@@ -2,14 +2,19 @@ package com.cjburkey.cubegame;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
+import org.lwjgl.system.MemoryUtil;
 
 public final class ShaderProgram {
 	
 	private int program = 0;
 	private final Map<Integer, Integer> shaders = new HashMap<>();	// Store shaders in a map to prevent multiple shaders of the same type (<Type, Shader>)
+	private final Map<String, Integer> uniforms = new HashMap<>();
 	private boolean valid = false;
 	
 	public ShaderProgram() {
@@ -20,6 +25,56 @@ public final class ShaderProgram {
 			return;
 		}
 		valid = true;
+	}
+	
+	public void addUniform(String name) {
+		if (!valid) {
+			Debug.error("Cannot add uniform to an invalid shader program ");
+			return;
+		}
+		if (uniforms.containsKey(name)) {
+			return;
+		}
+		int loc = glGetUniformLocation(program, name);
+		if (loc < 0) {
+			Debug.warn("Shader uniform not found: " + name);
+			return;
+		}
+		uniforms.put(name, loc);
+	}
+	
+	public void setUniform(String name, int value) {
+		if (uniforms.containsKey(name)) {
+			glUniform1i(uniforms.get(name), value);
+			return;
+		}
+		Debug.warn("Shader uniform not found: " + name);
+	}
+	
+	public void setUniform(String name, float value) {
+		if (uniforms.containsKey(name)) {
+			glUniform1f(uniforms.get(name), value);
+			return;
+		}
+		Debug.warn("Shader uniform not found: " + name);
+	}
+	
+	public void setUniform(String name, Vector4f value) {
+		if (uniforms.containsKey(name)) {
+			glUniform4f(uniforms.get(name), value.x, value.y, value.z, value.w);
+			return;
+		}
+		Debug.warn("Shader uniform not found: " + name);
+	}
+	
+	public void setUniform(String name, Matrix4f value) {
+		if (uniforms.containsKey(name)) {
+			FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(16);
+			glUniformMatrix4fv(uniforms.get(name), false, value.get(floatBuffer));
+			MemoryUtil.memFree(floatBuffer);
+			return;
+		}
+		Debug.warn("Shader uniform not found: " + name);
 	}
 	
 	public void addShader(int type, String source) {

@@ -1,14 +1,31 @@
 package com.cjburkey.cubegame;
 
+import static org.lwjgl.glfw.GLFW.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import com.cjburkey.cubegame.event.EventGamePreInit;
+import com.cjburkey.cubegame.event.EventHandler;
+import com.cjburkey.cubegame.event.EventListener;
 
+@EventListener
 public final class Input {
 	
 	private static final HashMap<Integer, Boolean> keysDown = new HashMap<>();
 	private static final List<Integer> up = new ArrayList<>();
+	
+	@EventHandler
+	public void onGameInit(EventGamePreInit e) {
+		Debug.log("Registered input handlers");
+		glfwSetKeyCallback(CubeGame.getWindow().getIdentifier(), (window, key, scancode, action, mods) -> {
+			if (action == GLFW_PRESS) {
+				_onKeyPressInternal(key);
+			} else if (action == GLFW_RELEASE) {
+				_onKeyReleaseInternal(key);
+			}
+		});
+	}
 	
 	// Checks whether the user has this key currently pressed
 	public static boolean getIsKeyPressed(int key) {
@@ -21,12 +38,12 @@ public final class Input {
 	}
 	
 	// Not to be called by the game
-	public static void _onKeyPressInternal(int key) {
+	private static void _onKeyPressInternal(int key) {
 		keysDown.put(key, true);
 	}
 	
 	// Not to be called by the game
-	public static void _onKeyReleaseInternal(int key) {
+	private static void _onKeyReleaseInternal(int key) {
 		up.add(key);
 	}
 	

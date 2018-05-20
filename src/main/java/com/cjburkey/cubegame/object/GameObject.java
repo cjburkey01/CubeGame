@@ -1,5 +1,6 @@
 package com.cjburkey.cubegame.object;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import com.cjburkey.cubegame.Debug;
@@ -43,6 +44,19 @@ public final class GameObject {
 		// Add all queued components
 		for (Component componentToAdd : componentsToAdd) {
 			components.add(componentToAdd);
+			// Give the "parent" variable a value in the component
+			try {
+				Field field = componentToAdd.getClass().getField("parent");
+				if (field == null) {
+					throw new Exception("Field not found");
+				}
+				field.setAccessible(true);
+				field.set(componentToAdd, this);
+			} catch (Exception e) {
+				Debug.error("Failed to set parent for component {} on object: {}", componentToAdd.getClass().getSimpleName());
+				Debug.exception(e);
+				continue;
+			}
 			componentToAdd.onAdd();
 		}
 		componentsToAdd.clear();

@@ -2,7 +2,12 @@ package com.cjburkey.cubegame.object;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.cjburkey.cubegame.event.EventGameRender;
+import com.cjburkey.cubegame.event.EventGameUpdate;
+import com.cjburkey.cubegame.event.EventHandler;
+import com.cjburkey.cubegame.event.EventListener;
 
+@EventListener
 public final class Scene {
 	
 	private static final List<GameObject> objectsInScene = new ArrayList<>();
@@ -19,16 +24,16 @@ public final class Scene {
 		objectsToDestroy.add(gameObject);
 	}
 	
-	// Not to be called by the game
-	public static void _onUpdateInternal() {
+	@EventHandler
+	private static void _onUpdateInternal(EventGameUpdate e) {
 		updateObjects();
 		for (GameObject objectInScene : objectsInScene) {
 			objectInScene.onUpdate();
 		}
 	}
 	
-	// Not to be called by the game
-	public static void _onRenderInternal() {
+	@EventHandler
+	private static void _onRenderInternal(EventGameRender e) {
 		for (GameObject objectInScene : objectsInScene) {
 			objectInScene.onRender();
 		}

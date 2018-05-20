@@ -2,6 +2,8 @@ package com.cjburkey.cubegame.object;
 
 public abstract class Component {
 	
+	public final GameObject parent = null;
+	
 	public void onAdd() {
 	}
 	

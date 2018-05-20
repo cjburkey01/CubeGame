@@ -10,6 +10,8 @@
 		<log4j.version>2.11.0</log4j.version>
 		<lwjgl.version>3.1.7-SNAPSHOT</lwjgl.version>
 		<joml.version>1.9.9</joml.version>
+		<guava.version>25.0-jre</guava.version>
+		<reflections.version>0.9.11</reflections.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
@@ -140,6 +142,16 @@
 			<groupId>org.joml</groupId>
 			<artifactId>joml</artifactId>
 			<version>${joml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${reflections.version}</version>
 		</dependency>
 	</dependencies>
 	<repositories>

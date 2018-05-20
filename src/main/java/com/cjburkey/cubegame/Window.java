@@ -64,15 +64,6 @@ public final class Window {
 			glViewport(0, 0, w, h);
 		});
 		
-		// Handle input with the "Input" class
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if (action == GLFW_PRESS) {
-				Input._onKeyPressInternal(key);
-			} else if (action == GLFW_RELEASE) {
-				Input._onKeyReleaseInternal(key);
-			}
-		});
-		
 		setWireframe(false);
 		
 		// Make this window functional
@@ -95,6 +86,7 @@ public final class Window {
 			return;
 		}
 		glfwShowWindow(window);
+		glfwRequestWindowAttention(window);
 	}
 	
 	// Hides the window
@@ -239,7 +231,11 @@ public final class Window {
 		GLFWVidMode vidMode = glfwGetVideoMode(monitor);
 		return new Vector2i(vidMode.width(), vidMode.height());
 	}
-
+	
+	public long getIdentifier() {
+		return window;
+	}
+	
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -249,7 +245,7 @@ public final class Window {
 		result = prime * result + (int) (window ^ (window >>> 32));
 		return result;
 	}
-
+	
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;

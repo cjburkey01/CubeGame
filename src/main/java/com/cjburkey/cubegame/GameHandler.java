@@ -24,8 +24,8 @@ public class GameHandler {
 	
 	public void preinit() {
 		voxelShader = new ShaderProgram();
-		voxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("/res/shader/voxel/voxelChunk.vs"));
-		voxelShader.addShader(GL20.GL_FRAGMENT_SHADER, FileUtil.readFileText("/res/shader/voxel/voxelChunk.fs"));
+		voxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("/res/shader/voxel/voxelChunkVert.glsl"));
+		voxelShader.addShader(GL20.GL_FRAGMENT_SHADER, FileUtil.readFileText("/res/shader/voxel/voxelChunkFrag.glsl"));
 		voxelShader.link();
 		voxelShader.bind();
 		

@@ -1,28 +1,38 @@
 package com.cjburkey.cubegame;
 
+import static org.lwjgl.glfw.GLFW.*;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import com.cjburkey.cubegame.object.Component;
 
 // Allows free movement around the origin of the object using WASD to move and QE to rotate
-public class FreeMove extends Component {
+public class FreeMoveController extends Component {
 	
 	public float moveSpeed = 10.0f;
-	public float rotationSpeed = 2.75f;
+	public float rotationSpeed = 0.225f;
+	public boolean lockCursor = true;
+	
+	private boolean lockedLastFrame = false;
 	
 	private final Vector3f move = new Vector3f().zero();
+	private final Vector2f rotation = new Vector2f().zero();
+	private final Vector2f rotationChange = new Vector2f().zero();
 	
 	public void onUpdate() {
-		// Reset movement from last frame
+		// Reset movement and rotation from last frame
+		rotationChange.zero();
 		move.zero();
 		
+		if (lockedLastFrame != lockCursor) {
+			glfwSetInputMode(CubeGame.getWindow().getIdentifier(), GLFW_CURSOR, (lockCursor) ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+			lockedLastFrame = lockCursor;
+		}
+		
 		// Rotation
-		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_Q)) {
-			parent.transform.rotation.rotateAxis(-rotationSpeed * CubeGame.getDeltaTimeF(), new Vector3f(0.0f, 1.0f, 0.0f));
-		}
-		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_E)) {
-			parent.transform.rotation.rotateAxis(rotationSpeed * CubeGame.getDeltaTimeF(), new Vector3f(0.0f, 1.0f, 0.0f));
-		}
+		rotationChange.set(Input.getDeltaMousePos().y, Input.getDeltaMousePos().x).mul(rotationSpeed);
+		rotation.add(rotationChange);
+		parent.transform.rotation.rotationXYZ(Mathf.degToRad(rotation.x), Mathf.degToRad(rotation.y), 0.0f);
 		
 		// Translation
 		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_W)) {

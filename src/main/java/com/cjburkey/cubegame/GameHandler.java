@@ -44,7 +44,7 @@ public class GameHandler {
 		// Add a camera to the scene and make it the main camera
 		GameObject camObj = Scene.createObject();
 		Camera.setMainCamera(camObj.addComponent(new Camera()));
-		camObj.addComponent(new FreeMove());
+		camObj.addComponent(new FreeMoveController());
 		
 		voxelShader = new ShaderProgram(true);
 		voxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("res/shader/voxel/voxelChunkVert.glsl"));

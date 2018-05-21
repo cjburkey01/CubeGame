@@ -82,11 +82,8 @@ public abstract class Mesh {
 	protected void bufferAndInitData() {
 	}
 	
-	protected void bindShader() {
-	}
-	
-	protected void unbindShader() {
-	}
+	protected abstract void bindShader();
+	protected abstract void unbindShader();
 	
 	public final boolean getHasInit() {
 		return hasInit;

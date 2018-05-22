@@ -3,6 +3,7 @@ package com.cjburkey.cubegame.object;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import com.cjburkey.cubegame.Debug;
 
 public final class GameObject {
@@ -13,9 +14,12 @@ public final class GameObject {
 	private final List<Component> componentsToAdd = new ArrayList<>();
 	private final List<Component> componentsToRemove = new ArrayList<>();
 	
+	public final UUID uuid;
 	public final Transform transform;
 	
 	public GameObject() {
+		uuid = UUID.randomUUID();
+		setName(uuid.toString());
 		transform = addComponent(new Transform());
 	}
 	
@@ -53,7 +57,7 @@ public final class GameObject {
 				field.setAccessible(true);
 				field.set(componentToAdd, this);
 			} catch (Exception e) {
-				Debug.error("Failed to set parent for component {} on object: {}", componentToAdd.getClass().getSimpleName());
+				Debug.error("Failed to set parent for component {} on object {}", componentToAdd.getClass().getSimpleName(), getName());
 				Debug.exception(e);
 				continue;
 			}

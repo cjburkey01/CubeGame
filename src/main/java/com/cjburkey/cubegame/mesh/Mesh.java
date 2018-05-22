@@ -58,20 +58,14 @@ public abstract class Mesh {
 		}
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glEnableVertexAttribArray(0);
 		customPreRender();
 		customRender();
+		customPostRender();
+		glDisableVertexAttribArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		unbindShader();
-	}
-	
-	// Override if there is a custom rendering behavior
-	protected void customRender() {
-		glDrawElements(GL_TRIANGLES, inds, GL_UNSIGNED_INT, 0);
-	}
-	
-	// Override if there is a custom rendering behavior that does not interfere with the draw call
-	protected void customPreRender() {
 	}
 	
 	// Generate custom buffers
@@ -80,6 +74,19 @@ public abstract class Mesh {
 	
 	// Add data to custom buffers
 	protected void bufferAndInitData() {
+	}
+	
+	// Override if there is a custom rendering behavior (replaces the draw call)
+	protected void customRender() {
+		glDrawElements(GL_TRIANGLES, inds, GL_UNSIGNED_INT, 0);
+	}
+	
+	// Override if there is a custom rendering behavior that does not interfere with the draw call
+	protected void customPreRender() {
+	}
+	
+	// Override if there is a custom rendering behavior that does not interfere with the draw call
+	protected void customPostRender() {
 	}
 	
 	protected abstract void bindShader();

@@ -12,6 +12,7 @@
 		<joml.version>1.9.9</joml.version>
 		<guava.version>25.0-jre</guava.version>
 		<reflections.version>0.9.11</reflections.version>
+		<commonsio.version>2.6</commonsio.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
@@ -153,6 +154,12 @@
 			<artifactId>reflections</artifactId>
 			<version>${reflections.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commonsio.version}</version>
+		</dependency>
+		
 	</dependencies>
 	<repositories>
 		<repository>

@@ -92,6 +92,13 @@ public final class Input {
 	}
 	
 	// Not to be called by the game
+	public static void _onEarlyUpdateInternal() {
+		// Update previous mouse position and mouse delta position
+		deltaMouse.set(mousePos.sub(prevMousePos, new Vector2f()));
+		prevMousePos.set(mousePos);
+	}
+	
+	// Not to be called by the game
 	public static void _onLateUpdateInternal() {
 		// Remove keys that were released at least one frame after they were pressed
 		for (int i = 0; i < keysUp.size(); i ++) {
@@ -118,12 +125,6 @@ public final class Input {
 		for (Entry<Integer, Boolean> keyDown : mouseDown.entrySet()) {
 			mouseDown.put(keyDown.getKey(), false);
 		}
-	}
-	
-	public static void _onEarlyUpdateInternal() {
-		// Update previous mouse position and mouse delta position
-		deltaMouse.set(mousePos.sub(prevMousePos, new Vector2f()));
-		prevMousePos.set(mousePos);
 	}
 	
 }

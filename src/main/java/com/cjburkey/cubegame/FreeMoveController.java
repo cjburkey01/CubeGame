@@ -48,9 +48,15 @@ public class FreeMoveController extends Component {
 			move.x += 1.0f;
 		}
 		if (!move.equals(new Vector3f().zero())) {
-			move.set(parent.transform.transformDirection(move.normalize(), true).mul(CubeGame.getDeltaTimeF() * moveSpeed));
-			parent.transform.position.add(move);
+			move.set(parent.transform.transformDirection(move.normalize(), true));
 		}
+		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
+			move.y -= 1.0f;
+		}
+		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_SPACE)) {
+			move.y += 1.0f;
+		}
+		parent.transform.position.add(move.mul(CubeGame.getDeltaTimeF() * moveSpeed));
 	}
 	
 }

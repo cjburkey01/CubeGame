@@ -11,6 +11,13 @@ import com.cjburkey.cubegame.world.World;
 
 public final class MeshHelper {
 	
+	// TODO: IMPLEMENT GREEDY MESHING ALGORITHM
+	public static void greedyMeshChunk(MeshData mesh, Chunk chunk) {
+		
+	}
+	
+	@Deprecated
+	// Use greedyMeshChunk instead
 	public static void dumbMeshChunk(MeshData mesh, Chunk chunk) {
 		Vector3i world = World.getBlockFromChunk(chunk.chunkPos).getPos();
 		for (int z = 0; z < World.BLOCKS_PER_CHUNK; z ++) {
@@ -33,6 +40,7 @@ public final class MeshHelper {
 		}
 	}
 	
+	@Deprecated
 	public static void addCube(MeshData mesh, Vector3f minCorner, Vector2f minUv, Vector2f maxUv, boolean[] sides) {
 		// Sides
 		if (sides[0]) {

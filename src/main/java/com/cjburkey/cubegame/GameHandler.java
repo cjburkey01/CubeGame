@@ -63,6 +63,7 @@ public class GameHandler {
 					MeshDumbVoxel mesh = new MeshDumbVoxel();
 					MeshData meshDat = new MeshData();
 					MeshHelper.dumbMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
+					//MeshHelper.greedyMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
 					mesh.setMesh(meshDat);
 					meshTestObject = Scene.createObject();
 					meshTestObject.transform.position.z -= 5.0f;

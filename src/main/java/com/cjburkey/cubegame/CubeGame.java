@@ -127,6 +127,8 @@ public final class CubeGame {
 		EventSystem.MAIN_HANDLER.triggerEvent(new EventGameExit());
 		//gameHandler.exit();
 		window.destroy();
+		
+		Debug.log("Exited");
 	}
 	
 	// Returns how long in seconds the period of time between this frame and the last frame was (in double format)

@@ -28,6 +28,11 @@ public class Chunk {
 		setBlock(blockPos, null);
 	}
 	
+	public boolean getIsTransparentAt(BlockPos blockPos) {
+		BlockState state = getBlockState(blockPos);
+		return state == null || state.block == null || !state.block.getIsFullBlock(state);
+	}
+	
 	public BlockState getBlockState(BlockPos blockPos) {
 		if (!verifyPos(blockPos)) {
 			return null;

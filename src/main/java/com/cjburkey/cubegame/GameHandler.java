@@ -1,9 +1,8 @@
 package com.cjburkey.cubegame;
 
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
+import com.cjburkey.cubegame.block.BlockPos;
 import com.cjburkey.cubegame.event.EventHandler;
 import com.cjburkey.cubegame.event.EventListener;
 import com.cjburkey.cubegame.event.game.EventGameExit;
@@ -18,6 +17,7 @@ import com.cjburkey.cubegame.object.Camera;
 import com.cjburkey.cubegame.object.GameObject;
 import com.cjburkey.cubegame.object.MeshFilter;
 import com.cjburkey.cubegame.object.Scene;
+import com.cjburkey.cubegame.world.World;
 
 @EventListener
 public class GameHandler {
@@ -25,21 +25,6 @@ public class GameHandler {
 	private static ShaderProgram voxelShader;
 	private static ShaderProgram dumbVoxelShader;
 	
-	// Test mesh thing
-	/*private static final Vector3f[] vertsTest = new Vector3f[] {
-		new Vector3f(0.5f, 0.0f, 0.5f),		// 0
-		new Vector3f(-0.5f, 0.0f, 0.5f),	// 1
-		new Vector3f(-0.5f, 0.0f, -0.5f),	// 2
-		new Vector3f(0.0f, 0.5f, 0.0f)		// 3
-	};
-	private static final int[] trisTest = new int[] {
-		0, 1, 2,
-		3, 1, 0,
-		0, 2, 3,
-		3, 2, 1
-	};*/
-	
-	private MeshDumbVoxel mesh = new MeshDumbVoxel();
 	private GameObject meshTestObject;
 	private boolean wireFrame = false;
 	
@@ -70,16 +55,24 @@ public class GameHandler {
 		dumbVoxelShader.setUniform("sampler", 0);
 		dumbVoxelShader.bind();
 		
-		//mesh.setMesh(vertsTest, trisTest);
-		MeshData meshDat = new MeshData();
-		MeshHelper.addCube(meshDat, new Vector3f(), new Vector2f().zero(), new Vector2f(1.0f, 1.0f));
-		mesh.setMesh(meshDat);
-		meshTestObject = Scene.createObject();
-		meshTestObject.transform.position.z -= 5.0f;
-		MeshFilter meshFilter = meshTestObject.addComponent(new MeshFilter());
-		meshFilter.setMesh(mesh);
+		World world = new World();
 		
-		//texture = Texture2D.createTextureFromFile("res/smile.png");
+		for (int x = -6; x < 7; x ++) {
+			for (int z = -6; z < 7; z ++) {
+				for (int y = -6; y < 7; y ++) {
+					MeshDumbVoxel mesh = new MeshDumbVoxel();
+					MeshData meshDat = new MeshData();
+					MeshHelper.dumbMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
+					mesh.setMesh(meshDat);
+					meshTestObject = Scene.createObject();
+					meshTestObject.transform.position.z -= 5.0f;
+					MeshFilter meshFilter = meshTestObject.addComponent(new MeshFilter());
+					meshFilter.setMesh(mesh);
+					Debug.log("Generated chunk {}, {}, {}", x, y, z);
+				}
+			}
+		}
+		
 		texture = Texture2D.createTextureFromFile("res/block.png");
 	}
 	
@@ -106,6 +99,7 @@ public class GameHandler {
 	@EventHandler
 	private void exit(EventGameExit e) {
 		Debug.log("Exiting CubeGame");
+		texture.destroy();
 	}
 	
 	public static ShaderProgram getVoxelShader() {

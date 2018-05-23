@@ -3,19 +3,58 @@ package com.cjburkey.cubegame.mesh;
 import java.util.Arrays;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
+import com.cjburkey.cubegame.block.BlockPos;
+import com.cjburkey.cubegame.block.BlockState;
+import com.cjburkey.cubegame.chunk.Chunk;
+import com.cjburkey.cubegame.world.World;
 
 public final class MeshHelper {
 	
-	public static void addCube(MeshData mesh, Vector3f minCorner, Vector2f minUv, Vector2f maxUv) {
+	public static void dumbMeshChunk(MeshData mesh, Chunk chunk) {
+		Vector3i world = World.getBlockFromChunk(chunk.chunkPos).getPos();
+		for (int z = 0; z < World.BLOCKS_PER_CHUNK; z ++) {
+			for (int y = 0; y < World.BLOCKS_PER_CHUNK; y ++) {
+				for (int x = 0; x < World.BLOCKS_PER_CHUNK; x ++) {
+					BlockState block = chunk.getBlockState(new BlockPos(x, y, z));
+					if (block == null || block.block == null) {
+						continue;
+					}
+					addCube(mesh, new Vector3f(world.x + x, world.y + y, world.z + z), new Vector2f(), new Vector2f(1.0f, 1.0f), new boolean[] {
+						chunk.getIsTransparentAt(new BlockPos(x, y, z + 1)),
+						chunk.getIsTransparentAt(new BlockPos(x + 1, y, z)),
+						chunk.getIsTransparentAt(new BlockPos(x, y, z - 1)),
+						chunk.getIsTransparentAt(new BlockPos(x - 1, y, z)),
+						chunk.getIsTransparentAt(new BlockPos(x, y + 1, z)),
+						chunk.getIsTransparentAt(new BlockPos(x, y - 1, z))
+					});
+				}
+			}
+		}
+	}
+	
+	public static void addCube(MeshData mesh, Vector3f minCorner, Vector2f minUv, Vector2f maxUv, boolean[] sides) {
 		// Sides
-		addQuad(mesh, minCorner, right(), up(), minUv, maxUv);	// Front
-		addQuad(mesh, new Vector3f(minCorner).add(right()), forward(), up(), minUv, maxUv);	// Right
-		addQuad(mesh, new Vector3f(minCorner).add(right()).add(forward()), left(), up(), minUv, maxUv);	// Back
-		addQuad(mesh, new Vector3f(minCorner).add(forward()), backward(), up(), minUv, maxUv);	// Left
+		if (sides[0]) {
+			addQuad(mesh, minCorner, right(), up(), minUv, maxUv);	// Front
+		}
+		if (sides[1]) {
+			addQuad(mesh, new Vector3f(minCorner).add(right()), forward(), up(), minUv, maxUv);	// Right
+		}
+		if (sides[2]) {
+			addQuad(mesh, new Vector3f(minCorner).add(right()).add(forward()), left(), up(), minUv, maxUv);	// Back
+		}
+		if (sides[3]) {
+			addQuad(mesh, new Vector3f(minCorner).add(forward()), backward(), up(), minUv, maxUv);	// Left
+		}
 		
 		// Top and bottom
-		addQuad(mesh, new Vector3f(minCorner).add(up()), right(), forward(), minUv, maxUv);	// Top
-		addQuad(mesh, new Vector3f(minCorner).add(forward()), right(), backward(), minUv, maxUv);	// Bottom
+		if (sides[4]) {
+			addQuad(mesh, new Vector3f(minCorner).add(up()), right(), forward(), minUv, maxUv);	// Top
+		}
+		if (sides[5]) {
+			addQuad(mesh, new Vector3f(minCorner).add(forward()), right(), backward(), minUv, maxUv);	// Bottom
+		}
 	}
 	
 	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f right, Vector3f up, Vector2f minUv, Vector2f maxUv) {

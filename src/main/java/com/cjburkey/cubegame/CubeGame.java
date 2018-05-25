@@ -71,7 +71,6 @@ public final class CubeGame {
 		}
 
 		EventSystem.MAIN_HANDLER.triggerEvent(new EventGamePreInit());
-		//gameHandler.preinit();
 	}
 	
 	// Called on the first frame of the game loop before update() and render()
@@ -81,7 +80,6 @@ public final class CubeGame {
 		window.center();
 		window.show();
 		EventSystem.MAIN_HANDLER.triggerEvent(new EventGameInit());
-		//gameHandler.init();
 	}
 	
 	// Called once every frame, used to handle physics and non-rendering functions
@@ -99,9 +97,7 @@ public final class CubeGame {
 			window.setName("CubeGame 0.0.1 | Delta Time: " + Debug.formatDecimal(deltaTime, 6) + " | Estimated FPS: " + Debug.formatDecimal(fps, 0) + " | Memory: " + (m / 1024 / 1024) + "MiB / " + (t / 1024 / 1024) + "MiB");
 		}
 		
-		//Scene._onUpdateInternal();
 		EventSystem.MAIN_HANDLER.triggerEvent(new EventGameUpdate());
-		//gameHandler.update();
 		
 		// Check whether the user pressed the X button on the window, and if so, begin the exit process after this frame finishes
 		if (window.getClosing()) {
@@ -114,9 +110,7 @@ public final class CubeGame {
 		// Clear the current buffer
 		window.clearBuffer();
 		
-		//Scene._onRenderInternal();
 		EventSystem.MAIN_HANDLER.triggerEvent(new EventGameRender());
-		//gameHandler.render();
 		
 		// Show the current buffer
 		window.swapBuffers();
@@ -125,7 +119,6 @@ public final class CubeGame {
 	// Called after the last frame is updated and rendered when the game is closing
 	private static void exit() {
 		EventSystem.MAIN_HANDLER.triggerEvent(new EventGameExit());
-		//gameHandler.exit();
 		window.destroy();
 		
 		Debug.log("Exited");

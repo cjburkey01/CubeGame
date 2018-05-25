@@ -29,6 +29,10 @@ public class FreeMoveController extends Component {
 			lockedLastFrame = lockCursor;
 		}
 		
+		if (!lockCursor) {
+			return;
+		}
+		
 		// Rotation
 		rotationChange.set(Input.getDeltaMousePos().y, Input.getDeltaMousePos().x).mul(rotationSpeed);
 		rotation.add(rotationChange);

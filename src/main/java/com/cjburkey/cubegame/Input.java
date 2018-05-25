@@ -102,7 +102,7 @@ public final class Input {
 	public static void _onLateUpdateInternal() {
 		// Remove keys that were released at least one frame after they were pressed
 		for (int i = 0; i < keysUp.size(); i ++) {
-			if (!keysDown.get(keysUp.get(i))) {
+			if (keysDown.get(keysUp.get(i)) == null || !keysDown.get(keysUp.get(i))) {
 				keysDown.remove(keysUp.get(i));
 				keysUp.remove(i --);
 			}
@@ -115,7 +115,7 @@ public final class Input {
 		
 		// Remove mouse buttons that were released at least one frame after they were pressed
 		for (int i = 0; i < mouseUp.size(); i ++) {
-			if (!mouseDown.get(mouseUp.get(i))) {
+			if (mouseDown.get(mouseUp.get(i)) == null || !mouseDown.get(mouseUp.get(i))) {
 				mouseDown.remove(mouseUp.get(i));
 				mouseUp.remove(i --);
 			}

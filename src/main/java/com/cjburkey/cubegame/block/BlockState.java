@@ -17,6 +17,10 @@ public final class BlockState {
 		this.posInChunk = posInChunk;
 	}
 	
+	public boolean isSame(BlockState other) {
+		return other.block.equals(block);
+	}
+	
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

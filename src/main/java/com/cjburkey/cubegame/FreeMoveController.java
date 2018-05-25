@@ -32,7 +32,15 @@ public class FreeMoveController extends Component {
 		// Rotation
 		rotationChange.set(Input.getDeltaMousePos().y, Input.getDeltaMousePos().x).mul(rotationSpeed);
 		rotation.add(rotationChange);
-		parent.transform.rotation.rotationXYZ(Mathf.degToRad(rotation.x), Mathf.degToRad(rotation.y), 0.0f);
+		rotation.x = Mathf.clamp(rotation.x, -90.0f, 90.0f);
+		while (rotation.y >= 360.0f) {
+			rotation.y -= 360.0f;
+		}
+		while (rotation.y <= 0.0f) {
+			rotation.y += 360.0f;
+		}
+		//Debug.log("Rotation: {}, {}", Debug.formatDecimal1(rotation.x), Debug.formatDecimal1(rotation.y));
+		parent.transform.rotation.identity().rotationXYZ(Mathf.degToRad(rotation.x), Mathf.degToRad(rotation.y), 0.0f);
 		
 		// Translation
 		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_W)) {
@@ -48,7 +56,7 @@ public class FreeMoveController extends Component {
 			move.x += 1.0f;
 		}
 		if (!move.equals(new Vector3f().zero())) {
-			move.set(parent.transform.transformDirection(move.normalize(), true));
+			move.set(parent.transform.transformDirection(move.normalize(), true)).set(move.x, 0.0f, move.z).normalize();
 		}
 		if (Input.getIsKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
 			move.y -= 1.0f;

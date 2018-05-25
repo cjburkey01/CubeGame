@@ -12,7 +12,7 @@ import com.cjburkey.cubegame.event.game.EventGameRender;
 import com.cjburkey.cubegame.event.game.EventGameUpdate;
 import com.cjburkey.cubegame.mesh.MeshData;
 import com.cjburkey.cubegame.mesh.MeshDumbVoxel;
-import com.cjburkey.cubegame.mesh.MeshHelper;
+import com.cjburkey.cubegame.mesh.MeshBuilder;
 import com.cjburkey.cubegame.object.Camera;
 import com.cjburkey.cubegame.object.GameObject;
 import com.cjburkey.cubegame.object.MeshFilter;
@@ -57,16 +57,14 @@ public class GameHandler {
 		
 		World world = new World();
 		
-		for (int x = -6; x < 7; x ++) {
-			for (int z = -6; z < 7; z ++) {
-				for (int y = -6; y < 7; y ++) {
+		for (int x = -8; x < 9; x ++) {
+			for (int z = -8; z < 9; z ++) {
+				for (int y = -8; y < 9; y ++) {
 					MeshDumbVoxel mesh = new MeshDumbVoxel();
 					MeshData meshDat = new MeshData();
-					MeshHelper.dumbMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
-					//MeshHelper.greedyMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
+					MeshBuilder.greedyMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
 					mesh.setMesh(meshDat);
 					meshTestObject = Scene.createObject();
-					meshTestObject.transform.position.z -= 5.0f;
 					MeshFilter meshFilter = meshTestObject.addComponent(new MeshFilter());
 					meshFilter.setMesh(mesh);
 					Debug.log("Generated chunk {}, {}, {}", x, y, z);

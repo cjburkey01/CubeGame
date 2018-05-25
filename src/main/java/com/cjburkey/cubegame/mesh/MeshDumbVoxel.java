@@ -6,7 +6,6 @@ import static org.lwjgl.opengl.GL20.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import com.cjburkey.cubegame.BufferUtil;
-import com.cjburkey.cubegame.GameHandler;
 import com.cjburkey.cubegame.ShaderProgram;
 import com.cjburkey.cubegame.Texture2D;
 
@@ -25,8 +24,8 @@ public class MeshDumbVoxel extends Mesh {
 	}
 	
 	public void bindShader() {
-		GameHandler.getDumbVoxelShader().bind();
-		GameHandler.texture.bind();
+		//GameHandler.getDumbVoxelShader().bind();
+		//GameHandler.texture.bind();
 	}
 	
 	public void unbindShader() {

@@ -1,20 +1,23 @@
 package com.cjburkey.cubegame.mesh;
 
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 public class Quad {
 	
 	public final Vector2i start = new Vector2i();
 	public final Vector2i end = new Vector2i();
+	public final Vector3f color = new Vector3f();
 	public int y = 0;
 	
 	public Quad() {
 	}
 	
-	public Quad(Vector2i start, Vector2i end, int y) {
+	public Quad(Vector2i start, Vector2i end, Vector3f color, int y) {
 		this.start.set(start);
 		this.end.set(end);
+		this.color.set(color);
 		this.y = y;
 	}
 	

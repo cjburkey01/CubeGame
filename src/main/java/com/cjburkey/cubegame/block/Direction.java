@@ -17,4 +17,20 @@ public enum Direction {
 		this.unitDir = unitDir;
 	}
 	
+	public BlockPos add(BlockPos pos) {
+		return pos.add(unitDir);
+	}
+	
+	public BlockPos add(BlockPos pos, int length) {
+		return pos.add(unitDir.scalar(length));
+	}
+	
+	public BlockPos sub(BlockPos pos) {
+		return pos.sub(unitDir);
+	}
+	
+	public BlockPos sub(BlockPos pos, int length) {
+		return pos.sub(unitDir.scalar(length));
+	}
+	
 }

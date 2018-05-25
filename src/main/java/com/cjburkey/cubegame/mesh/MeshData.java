@@ -10,5 +10,6 @@ public class MeshData {
 	public final List<Vector3f> verts = new ArrayList<>();
 	public final List<Integer> inds = new ArrayList<>();
 	public final List<Vector2f> uvs = new ArrayList<>();
+	public final List<Vector3f> colors = new ArrayList<>();
 	
 }

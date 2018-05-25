@@ -148,6 +148,8 @@ public final class ShaderProgram {
 	}
 	
 	public void destroy() {
+		unbind();
+		
 		// Destroy the program
 		glDeleteProgram(program);
 	}

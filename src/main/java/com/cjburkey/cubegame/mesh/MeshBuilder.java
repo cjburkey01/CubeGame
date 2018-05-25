@@ -9,6 +9,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import com.cjburkey.cubegame.block.BlockPos;
 import com.cjburkey.cubegame.block.BlockState;
+import com.cjburkey.cubegame.block.Direction;
 import com.cjburkey.cubegame.chunk.Chunk;
 import com.cjburkey.cubegame.world.World;
 
@@ -55,22 +56,90 @@ public final class MeshBuilder {
 					}
 					end.y --;
 					
-					topDownQuads.add(new Quad(new Vector2i(x, z), new Vector2i(end), y));
+					topDownQuads.add(new Quad(new Vector2i(x, z), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.UP), y));
 				}
 			}
 		}
 		for (Quad tdquad : topDownQuads) {
 			int lx = tdquad.end.x - tdquad.start.x + 1;
 			int ly = tdquad.end.y - tdquad.start.y + 1;
-			//addQuad(mesh, new Vector3f(chunkWorldPos.x + tdquad.start.x, chunkWorldPos.y + tdquad.y + 1.0f, chunkWorldPos.z + tdquad.start.y), right().mul(lx), forward().mul(ly), new Vector2f().zero(), new Vector2f(1.0f, 1.0f));
 			Vector3f start = new Vector3f(chunkWorldPos.x + tdquad.start.x, chunkWorldPos.y + tdquad.y + 1.0f, -chunkWorldPos.z - tdquad.start.y);
-			addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, -ly), new Vector3f(start).add(0, 0, -ly), new Vector2f().zero(), new Vector2f(1.0f, 1.0f));
-			//Debug.log("Added quad: {}, {} to {}, {} on y level {}", tdquad.start.x, tdquad.start.y, tdquad.end.x, tdquad.end.y, tdquad.y);
+			addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, -ly), new Vector3f(start).add(0, 0, -ly), tdquad.color);
 		}
 	}
 	
 	private static boolean isValidBlockForMeshingTop(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
 		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos).add(new Vector3i(0, 1, 0))) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, pos);
+	}
+	
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f right, Vector3f up, Vector2f minUv, Vector2f maxUv) {
+		addQuad(mesh, bLCorner, new Vector3f(bLCorner).add(right), new Vector3f(bLCorner).add(right).add(up), new Vector3f(bLCorner).add(up), minUv, maxUv);
+	}
+	
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector2f minUv, Vector2f maxUv) {
+		// Starting index
+		int i = mesh.verts.size();
+		
+		// Vertices
+		mesh.verts.add(new Vector3f(bLCorner));
+		mesh.verts.add(new Vector3f(bRCorner));
+		mesh.verts.add(new Vector3f(tRCorner));
+		mesh.verts.add(new Vector3f(tLCorner));
+		
+		// Indices
+		mesh.inds.addAll(Arrays.asList(i, i + 1, i + 2,
+									   i, i + 2, i + 3));
+		
+		// Texture coordinates
+		mesh.uvs.add(new Vector2f(minUv.x, maxUv.y));
+		mesh.uvs.add(new Vector2f(maxUv));
+		mesh.uvs.add(new Vector2f(maxUv.x, minUv.y));
+		mesh.uvs.add(new Vector2f(minUv));
+	}
+	
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector3f color) {
+		// Starting index
+		int i = mesh.verts.size();
+		
+		// Vertices
+		mesh.verts.add(new Vector3f(bLCorner));
+		mesh.verts.add(new Vector3f(bRCorner));
+		mesh.verts.add(new Vector3f(tRCorner));
+		mesh.verts.add(new Vector3f(tLCorner));
+		
+		// Indices
+		mesh.inds.addAll(Arrays.asList(i, i + 1, i + 2,
+									   i, i + 2, i + 3));
+		
+		// Colors
+		mesh.colors.add(new Vector3f(color));
+		mesh.colors.add(new Vector3f(color));
+		mesh.colors.add(new Vector3f(color));
+		mesh.colors.add(new Vector3f(color));
+	}
+	
+	public static Vector3f right() {
+		return new Vector3f(1.0f, 0.0f, 0.0f);
+	}
+	
+	public static Vector3f left() {
+		return new Vector3f(-1.0f, 0.0f, 0.0f);
+	}
+	
+	public static Vector3f up() {
+		return new Vector3f(0.0f, 1.0f, 0.0f);
+	}
+	
+	public static Vector3f down() {
+		return new Vector3f(0.0f, -1.0f, 0.0f);
+	}
+	
+	public static Vector3f forward() {
+		return new Vector3f(0.0f, 0.0f, -1.0f);
+	}
+	
+	public static Vector3f backward() {
+		return new Vector3f(0.0f, 0.0f, 1.0f);
 	}
 	
 	@Deprecated
@@ -120,55 +189,6 @@ public final class MeshBuilder {
 		if (sides[5]) {
 			addQuad(mesh, new Vector3f(minCorner).add(forward()), right(), backward(), minUv, maxUv);	// Bottom
 		}
-	}
-	
-	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f right, Vector3f up, Vector2f minUv, Vector2f maxUv) {
-		addQuad(mesh, bLCorner, new Vector3f(bLCorner).add(right), new Vector3f(bLCorner).add(right).add(up), new Vector3f(bLCorner).add(up), minUv, maxUv);
-	}
-	
-	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector2f minUv, Vector2f maxUv) {
-		// Starting index
-		int i = mesh.verts.size();
-		
-		// Vertices
-		mesh.verts.add(new Vector3f(bLCorner));
-		mesh.verts.add(new Vector3f(bRCorner));
-		mesh.verts.add(new Vector3f(tRCorner));
-		mesh.verts.add(new Vector3f(tLCorner));
-		
-		// Indices
-		mesh.inds.addAll(Arrays.asList(i, i + 1, i + 2,
-									   i, i + 2, i + 3));
-		
-		// Texture coordinates
-		mesh.uvs.add(new Vector2f(minUv.x, maxUv.y));
-		mesh.uvs.add(new Vector2f(maxUv));
-		mesh.uvs.add(new Vector2f(maxUv.x, minUv.y));
-		mesh.uvs.add(new Vector2f(minUv));
-	}
-	
-	public static Vector3f right() {
-		return new Vector3f(1.0f, 0.0f, 0.0f);
-	}
-	
-	public static Vector3f left() {
-		return new Vector3f(-1.0f, 0.0f, 0.0f);
-	}
-	
-	public static Vector3f up() {
-		return new Vector3f(0.0f, 1.0f, 0.0f);
-	}
-	
-	public static Vector3f down() {
-		return new Vector3f(0.0f, -1.0f, 0.0f);
-	}
-	
-	public static Vector3f forward() {
-		return new Vector3f(0.0f, 0.0f, -1.0f);
-	}
-	
-	public static Vector3f backward() {
-		return new Vector3f(0.0f, 0.0f, 1.0f);
 	}
 	
 }

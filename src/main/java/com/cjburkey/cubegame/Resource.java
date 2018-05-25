@@ -1,5 +1,7 @@
 package com.cjburkey.cubegame;
 
+import java.util.regex.Pattern;
+
 public class Resource {
 	
 	public final String domain;
@@ -7,6 +9,14 @@ public class Resource {
 	
 	public Resource(String domain, String path) {
 		this.domain = domain;
+		
+		path = path.trim().replaceAll(Pattern.quote("\\"), "/");
+		while (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+		while (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 2);
+		}
 		this.path = path;
 	}
 	

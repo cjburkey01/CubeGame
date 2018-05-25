@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.joml.Vector3i;
 import com.cjburkey.cubegame.block.BlockPos;
+import com.cjburkey.cubegame.block.BlockState;
 import com.cjburkey.cubegame.chunk.Chunk;
 
 public final class World {
@@ -21,6 +22,14 @@ public final class World {
 		generator.generateChunk(chunk);
 		generatedChunks.put(chunkPos, chunk);
 		return chunk;
+	}
+	
+	public BlockState getBlock(BlockPos pos) {
+		return getOrGenerateChunk(getChunkFromBlock(pos)).getBlockState(getBlockPositionInChunk(pos));
+	}
+	
+	public boolean getIsTransparentAt(BlockPos pos) {
+		return getOrGenerateChunk(getChunkFromBlock(pos)).getIsTransparentAt(getBlockPositionInChunk(pos));
 	}
 	
 	// Gets the chunk that contains the provided block

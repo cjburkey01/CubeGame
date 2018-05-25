@@ -10,9 +10,9 @@ import com.cjburkey.cubegame.event.game.EventGameInit;
 import com.cjburkey.cubegame.event.game.EventGamePreInit;
 import com.cjburkey.cubegame.event.game.EventGameRender;
 import com.cjburkey.cubegame.event.game.EventGameUpdate;
-import com.cjburkey.cubegame.mesh.MeshData;
-import com.cjburkey.cubegame.mesh.MeshDumbVoxel;
 import com.cjburkey.cubegame.mesh.MeshBuilder;
+import com.cjburkey.cubegame.mesh.MeshData;
+import com.cjburkey.cubegame.mesh.MeshVoxel;
 import com.cjburkey.cubegame.object.Camera;
 import com.cjburkey.cubegame.object.GameObject;
 import com.cjburkey.cubegame.object.MeshFilter;
@@ -23,12 +23,10 @@ import com.cjburkey.cubegame.world.World;
 public class GameHandler {
 	
 	private static ShaderProgram voxelShader;
-	private static ShaderProgram dumbVoxelShader;
+	//private static ShaderProgram dumbVoxelShader;
 	
 	private GameObject meshTestObject;
 	private boolean wireFrame = false;
-	
-	public static Texture2D texture;	// TODO: Make private
 	
 	@EventHandler
 	private void preinit(EventGamePreInit e) {
@@ -43,24 +41,22 @@ public class GameHandler {
 		voxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("res/shader/voxel/voxelChunkVert.glsl"));
 		voxelShader.addShader(GL20.GL_FRAGMENT_SHADER, FileUtil.readFileText("res/shader/voxel/voxelChunkFrag.glsl"));
 		voxelShader.link();
-		voxelShader.addUniform("sampler");
-		voxelShader.setUniform("sampler", 0);
 		voxelShader.bind();
 		
-		dumbVoxelShader = new ShaderProgram(true);
+		/*dumbVoxelShader = new ShaderProgram(true);
 		dumbVoxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("res/shader/dumbVoxel/dumbVoxelChunkVert.glsl"));
 		dumbVoxelShader.addShader(GL20.GL_FRAGMENT_SHADER, FileUtil.readFileText("res/shader/dumbVoxel/dumbVoxelChunkFrag.glsl"));
 		dumbVoxelShader.link();
 		dumbVoxelShader.addUniform("sampler");
 		dumbVoxelShader.setUniform("sampler", 0);
-		dumbVoxelShader.bind();
+		dumbVoxelShader.bind();*/
 		
 		World world = new World();
 		
 		for (int x = -8; x < 9; x ++) {
 			for (int z = -8; z < 9; z ++) {
 				for (int y = -8; y < 9; y ++) {
-					MeshDumbVoxel mesh = new MeshDumbVoxel();
+					MeshVoxel mesh = new MeshVoxel();
 					MeshData meshDat = new MeshData();
 					MeshBuilder.greedyMeshChunk(meshDat, world.getOrGenerateChunk(new BlockPos(x, y, z)));
 					mesh.setMesh(meshDat);
@@ -71,8 +67,6 @@ public class GameHandler {
 				}
 			}
 		}
-		
-		texture = Texture2D.createTextureFromFile("res/block.png");
 	}
 	
 	@EventHandler
@@ -98,15 +92,17 @@ public class GameHandler {
 	@EventHandler
 	private void exit(EventGameExit e) {
 		Debug.log("Exiting CubeGame");
-		texture.destroy();
+		
+		//dumbVoxelShader.destroy();
+		voxelShader.destroy();
 	}
 	
 	public static ShaderProgram getVoxelShader() {
 		return voxelShader;
 	}
 	
-	public static ShaderProgram getDumbVoxelShader() {
-		return dumbVoxelShader;
-	}
+	//public static ShaderProgram getDumbVoxelShader() {
+	//	return dumbVoxelShader;
+	//}
 	
 }

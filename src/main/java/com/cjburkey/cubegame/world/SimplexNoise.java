@@ -1,4 +1,4 @@
-package com.cjburkey.cubegame;
+package com.cjburkey.cubegame.world;
 
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.

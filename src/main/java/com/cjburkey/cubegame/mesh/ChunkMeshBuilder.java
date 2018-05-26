@@ -17,7 +17,7 @@ public final class ChunkMeshBuilder {
 	// Creates an algorithm that is more locally efficient
 	// May not (probably will not) be the BEST mesh, but it
 	// Will be as good as it gets with the speed/efficiency ratio
-	// TODO: CROSS-CHUNK BLOCK CHECKING
+	//// TODO: CROSS-CHUNK BLOCK CHECKING
 	public static void greedyMeshChunk(MeshData mesh, Chunk chunk) {
 		Vector3i chunkWorldPos = World.getBlockFromChunk(chunk.chunkPos).getPos();
 		
@@ -33,20 +33,20 @@ public final class ChunkMeshBuilder {
 		// Bottom-up
 		meshBottomFaces(mesh, chunk, chunkWorldPos);
 		
-		// Front-back
-		meshBackFaces(mesh, chunk, chunkWorldPos);
-		
 		// Back-front
 		meshFrontFaces(mesh, chunk, chunkWorldPos);
+		
+		// Front-back
+		meshBackFaces(mesh, chunk, chunkWorldPos);
 	}
 	
-	private static void meshFrontFaces(MeshData mesh, Chunk chunk, Vector3i chunkWorldPos) {
+	private static void meshBackFaces(MeshData mesh, Chunk chunk, Vector3i chunkWorldPos) {
 		int z = 0;
 		Set<Quad> backFrontQuads = new HashSet<>();
 		for (int x = 0; x < World.BLOCKS_PER_CHUNK; x ++) {
 			for (int y = 0; y < World.BLOCKS_PER_CHUNK; y ++) {
 				for (z = World.BLOCKS_PER_CHUNK - 1; z >= 0; z --) {
-					if (Quad.contains(backFrontQuads, new Vector3i(x, z, y)) || chunk.getIsTransparentAt(new BlockPos(x, y, z)) || !chunk.getIsTransparentAt(new BlockPos(x, y, z - 1))) {
+					if (Quad.contains(backFrontQuads, new Vector3i(x, z, y)) || checkTransparent(chunk, new Vector3i(x, y, z)) || !checkTransparent(chunk, new Vector3i(x, y, z - 1))) {
 						continue;
 					}
 					
@@ -81,17 +81,17 @@ public final class ChunkMeshBuilder {
 			int lx = rlquad.end.x - rlquad.start.x + 1;
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.start.x, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.y);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, ly, 0), new Vector3f(start).add(0, ly, 0), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, ly, 0), new Vector3f(start).add(0, ly, 0), MeshBuilder.backward(), rlquad.color);
 		}
 	}
 	
-	private static void meshBackFaces(MeshData mesh, Chunk chunk, Vector3i chunkWorldPos) {
+	private static void meshFrontFaces(MeshData mesh, Chunk chunk, Vector3i chunkWorldPos) {
 		int z = 0;
 		Set<Quad> frontBackQuads = new HashSet<>();
 		for (int x = 0; x < World.BLOCKS_PER_CHUNK; x ++) {
 			for (int y = 0; y < World.BLOCKS_PER_CHUNK; y ++) {
 				for (z = World.BLOCKS_PER_CHUNK - 1; z >= 0; z --) {
-					if (Quad.contains(frontBackQuads, new Vector3i(x, z, y)) || chunk.getIsTransparentAt(new BlockPos(x, y, z)) || !chunk.getIsTransparentAt(new BlockPos(x, y, z + 1))) {
+					if (Quad.contains(frontBackQuads, new Vector3i(x, z, y)) || checkTransparent(chunk, new Vector3i(x, y, z)) || !checkTransparent(chunk, new Vector3i(x, y, z + 1))) {
 						continue;
 					}
 					
@@ -126,7 +126,7 @@ public final class ChunkMeshBuilder {
 			int lx = rlquad.end.x - rlquad.start.x + 1;
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.start.x + lx, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.y - 1.0f);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(-lx, 0, 0), new Vector3f(start).add(-lx, ly, 0), new Vector3f(start).add(0, ly, 0), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(-lx, 0, 0), new Vector3f(start).add(-lx, ly, 0), new Vector3f(start).add(0, ly, 0), MeshBuilder.forward(), rlquad.color);
 		}
 	}
 	
@@ -137,7 +137,7 @@ public final class ChunkMeshBuilder {
 			for (int x = 0; x < World.BLOCKS_PER_CHUNK; x ++) {
 				for (y = World.BLOCKS_PER_CHUNK - 1; y >= 0; y --) {
 					// Check that the block exists and is not included in another quad
-					if (Quad.contains(bottomUpQuads, new Vector3i(x, y, z)) || chunk.getIsTransparentAt(new BlockPos(x, y, z)) || !chunk.getIsTransparentAt(new BlockPos(x, y - 1, z))) {
+					if (Quad.contains(bottomUpQuads, new Vector3i(x, y, z)) || checkTransparent(chunk, new Vector3i(x, y, z)) || !checkTransparent(chunk, new Vector3i(x, y - 1, z))) {
 						continue;
 					}
 					
@@ -175,7 +175,7 @@ public final class ChunkMeshBuilder {
 			int lx = tdquad.end.x - tdquad.start.x + 1;
 			int ly = tdquad.end.y - tdquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + tdquad.start.x, chunkWorldPos.y + tdquad.y, -chunkWorldPos.z - tdquad.start.y - ly);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, ly), new Vector3f(start).add(0, 0, ly), tdquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, ly), new Vector3f(start).add(0, 0, ly), MeshBuilder.down(), tdquad.color);
 		}
 	}
 	
@@ -185,7 +185,7 @@ public final class ChunkMeshBuilder {
 		for (int z = 0; z < World.BLOCKS_PER_CHUNK; z ++) {
 			for (int y = 0; y < World.BLOCKS_PER_CHUNK; y ++) {
 				for (x = World.BLOCKS_PER_CHUNK - 1; x >= 0; x --) {
-					if (Quad.contains(leftRightQuads, new Vector3i(z, x, y)) || chunk.getIsTransparentAt(new BlockPos(x, y, z)) || !chunk.getIsTransparentAt(new BlockPos(x - 1, y, z))) {
+					if (Quad.contains(leftRightQuads, new Vector3i(z, x, y)) || checkTransparent(chunk, new Vector3i(x, y, z)) || !checkTransparent(chunk, new Vector3i(x - 1, y, z))) {
 						continue;
 					}
 					
@@ -220,7 +220,7 @@ public final class ChunkMeshBuilder {
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			int lz = rlquad.end.x - rlquad.start.x + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.y, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.start.x - lz);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, lz), new Vector3f(start).add(0, ly, lz), new Vector3f(start).add(0, ly, 0), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, lz), new Vector3f(start).add(0, ly, lz), new Vector3f(start).add(0, ly, 0), MeshBuilder.left(), rlquad.color);
 		}
 	}
 	
@@ -230,7 +230,7 @@ public final class ChunkMeshBuilder {
 		for (int z = 0; z < World.BLOCKS_PER_CHUNK; z ++) {
 			for (int y = 0; y < World.BLOCKS_PER_CHUNK; y ++) {
 				for (x = World.BLOCKS_PER_CHUNK - 1; x >= 0; x --) {
-					if (Quad.contains(rightLeftQuads, new Vector3i(z, x, y)) || chunk.getIsTransparentAt(new BlockPos(x, y, z)) || !chunk.getIsTransparentAt(new BlockPos(x + 1, y, z))) {
+					if (Quad.contains(rightLeftQuads, new Vector3i(z, x, y)) || checkTransparent(chunk, new Vector3i(x, y, z)) || !checkTransparent(chunk, new Vector3i(x + 1, y, z))) {
 						continue;
 					}
 					
@@ -265,7 +265,7 @@ public final class ChunkMeshBuilder {
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			int lz = rlquad.end.x - rlquad.start.x + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.y + 1.0f, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.start.x);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, -lz), new Vector3f(start).add(0, ly, -lz), new Vector3f(start).add(0, ly, 0), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, -lz), new Vector3f(start).add(0, ly, -lz), new Vector3f(start).add(0, ly, 0), MeshBuilder.right(), rlquad.color);
 		}
 	}
 	
@@ -276,7 +276,7 @@ public final class ChunkMeshBuilder {
 			for (int x = 0; x < World.BLOCKS_PER_CHUNK; x ++) {
 				for (y = World.BLOCKS_PER_CHUNK - 1; y >= 0; y --) {
 					// Check that the block exists and is not included in another quad
-					if (Quad.contains(topDownQuads, new Vector3i(x, y, z)) || chunk.getIsTransparentAt(new BlockPos(x, y, z)) || !chunk.getIsTransparentAt(new BlockPos(x, y + 1, z))) {
+					if (Quad.contains(topDownQuads, new Vector3i(x, y, z)) || checkTransparent(chunk, new Vector3i(x, y, z)) || !checkTransparent(chunk, new Vector3i(x, y + 1, z))) {
 						continue;
 					}
 					
@@ -314,32 +314,37 @@ public final class ChunkMeshBuilder {
 			int lx = tdquad.end.x - tdquad.start.x + 1;
 			int ly = tdquad.end.y - tdquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + tdquad.start.x, chunkWorldPos.y + tdquad.y + 1.0f, -chunkWorldPos.z - tdquad.start.y);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, -ly), new Vector3f(start).add(0, 0, -ly), tdquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, -ly), new Vector3f(start).add(0, 0, -ly), MeshBuilder.up(), tdquad.color);
 		}
 	}
 	
 	private static boolean isValidBlockForMeshingTop(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
-		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos.x, pos.y + 1, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, pos);
+		return !checkTransparent(chunk, new Vector3i(pos)) && checkTransparent(chunk, new Vector3i(pos.x, pos.y + 1, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, pos);
 	}
 	
 	private static boolean isValidBlockForMeshingRight(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
-		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos.x + 1, pos.y, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.z, pos.x, pos.y));
+		return !checkTransparent(chunk, new Vector3i(pos)) && checkTransparent(chunk, new Vector3i(pos.x + 1, pos.y, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.z, pos.x, pos.y));
 	}
 	
 	private static boolean isValidBlockForMeshingLeft(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
-		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos.x - 1, pos.y, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.z, pos.x, pos.y));
+		return !checkTransparent(chunk, new Vector3i(pos)) && checkTransparent(chunk, new Vector3i(pos.x - 1, pos.y, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.z, pos.x, pos.y));
 	}
 	
 	private static boolean isValidBlockForMeshingBottom(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
-		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos.x, pos.y - 1, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, pos);
+		return !checkTransparent(chunk, new Vector3i(pos)) && checkTransparent(chunk, new Vector3i(pos.x, pos.y - 1, pos.z)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, pos);
 	}
 	
 	private static boolean isValidBlockForMeshingBack(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
-		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos.x, pos.y, pos.z + 1)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.x, pos.z, pos.y));
+		return !checkTransparent(chunk, new Vector3i(pos)) && checkTransparent(chunk, new Vector3i(pos.x, pos.y, pos.z + 1)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.x, pos.z, pos.y));
 	}
 	
 	private static boolean isValidBlockForMeshingFront(Chunk chunk, BlockState start, Set<Quad> quads, Vector3i pos) {
-		return !chunk.getIsTransparentAt(new BlockPos(pos)) && chunk.getIsTransparentAt(new BlockPos(pos.x, pos.y, pos.z - 1)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.x, pos.z, pos.y));
+		return !checkTransparent(chunk, new Vector3i(pos)) && checkTransparent(chunk, new Vector3i(pos.x, pos.y, pos.z - 1)) && start.isSame(chunk.getBlockState(new BlockPos(pos))) && !Quad.contains(quads, new Vector3i(pos.x, pos.z, pos.y));
+	}
+	
+	private static boolean checkTransparent(Chunk chunk, Vector3i pos) {
+		pos.add(World.getBlockFromChunk(chunk.chunkPos).getPos());
+		return chunk.world.getIsTransparentAt(new BlockPos(pos));
 	}
 	
 	@Deprecated
@@ -370,24 +375,24 @@ public final class ChunkMeshBuilder {
 	public static void addCube(MeshData mesh, Vector3f minCorner, Vector2f minUv, Vector2f maxUv, boolean[] sides) {
 		// Sides
 		if (sides[0]) {
-			MeshBuilder.addQuad(mesh, minCorner, MeshBuilder.right(), MeshBuilder.up(), minUv, maxUv);	// Front
+			MeshBuilder.addQuad(mesh, minCorner, MeshBuilder.right(), MeshBuilder.up(), MeshBuilder.backward(), minUv, maxUv);	// Front
 		}
 		if (sides[1]) {
-			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.right()), MeshBuilder.forward(), MeshBuilder.up(), minUv, maxUv);	// Right
+			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.right()), MeshBuilder.forward(), MeshBuilder.up(), MeshBuilder.right(), minUv, maxUv);	// Right
 		}
 		if (sides[2]) {
-			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.right()).add(MeshBuilder.forward()), MeshBuilder.left(), MeshBuilder.up(), minUv, maxUv);	// Back
+			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.right()).add(MeshBuilder.forward()), MeshBuilder.left(), MeshBuilder.forward(), MeshBuilder.backward(), minUv, maxUv);	// Back
 		}
 		if (sides[3]) {
-			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.forward()), MeshBuilder.backward(), MeshBuilder.up(), minUv, maxUv);	// Left
+			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.forward()), MeshBuilder.backward(), MeshBuilder.up(), MeshBuilder.left(), minUv, maxUv);	// Left
 		}
 		
 		// Top and bottom
 		if (sides[4]) {
-			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.up()), MeshBuilder.right(), MeshBuilder.forward(), minUv, maxUv);	// Top
+			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.up()), MeshBuilder.right(), MeshBuilder.forward(), MeshBuilder.up(), minUv, maxUv);	// Top
 		}
 		if (sides[5]) {
-			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.forward()), MeshBuilder.right(), MeshBuilder.backward(), minUv, maxUv);	// Bottom
+			MeshBuilder.addQuad(mesh, new Vector3f(minCorner).add(MeshBuilder.forward()), MeshBuilder.right(), MeshBuilder.backward(), MeshBuilder.down(), minUv, maxUv);	// Bottom
 		}
 	}
 	

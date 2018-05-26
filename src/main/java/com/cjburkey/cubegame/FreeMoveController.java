@@ -36,7 +36,7 @@ public class FreeMoveController extends Component {
 		// Rotation
 		rotationChange.set(Input.getDeltaMousePos().y, Input.getDeltaMousePos().x).mul(rotationSpeed);
 		rotation.add(rotationChange);
-		rotation.x = Mathf.clamp(rotation.x, -90.0f, 90.0f);
+		rotation.x = Mathf.clamp(rotation.x, -89.0f, 89.0f);
 		while (rotation.y >= 360.0f) {
 			rotation.y -= 360.0f;
 		}

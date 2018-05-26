@@ -9,6 +9,7 @@ import com.cjburkey.cubegame.BufferUtil;
 import com.cjburkey.cubegame.ShaderProgram;
 import com.cjburkey.cubegame.Texture2D;
 
+@Deprecated
 public class MeshDumbVoxel extends Mesh {
 	
 	private int uvbo;

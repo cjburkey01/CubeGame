@@ -73,4 +73,8 @@ public class BlockPos {
 		return true;
 	}
 	
+	public String toString() {
+		return pos.x + ", " + pos.y + ", " + pos.z;
+	}
+	
 }

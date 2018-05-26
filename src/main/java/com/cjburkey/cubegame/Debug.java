@@ -41,6 +41,18 @@ public final class Debug {
 		error(" -- END EXCEPTION --");
 	}
 	
+	public static void stacktrace() {
+		log(" -- NON ERROR STACKTRACE --");
+		for (StackTraceElement stackTrace : getStackTrace()) {
+			log("    {}", stackTrace.toString());
+		}
+		log(" -- END STACKTRACE --");
+	}
+	
+	public static StackTraceElement[] getStackTrace() {
+		return new Exception("yoyoyo").getStackTrace();
+	}
+	
 	public static String formatDecimal(double decimal, int places) {
 		return String.format("%." + places + "f", decimal);
 	}

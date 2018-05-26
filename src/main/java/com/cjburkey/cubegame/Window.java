@@ -2,6 +2,7 @@ package com.cjburkey.cubegame;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
@@ -21,7 +22,7 @@ public final class Window {
 	private GLCapabilities caps;
 	private boolean valid = false;
 	
-	public Window(String name, int width, int height, boolean vsync) {
+	public Window(String name, int width, int height, boolean vsync, int samples) {
 		this.name = name;
 		size.set(width, height);
 		
@@ -37,6 +38,7 @@ public final class Window {
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_SAMPLES, samples);
 		
 		// Window should be resizable, but not shown by default
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -67,11 +69,13 @@ public final class Window {
 			EventSystem.MAIN_HANDLER.triggerEvent(new EventWindowResize(this, w, h));
 		});
 		
+		if (samples > 0) {
+			glEnable(GL_MULTISAMPLE);
+		}
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		setDrawBothFaces(false);
 		glEnable(GL_BLEND);
 		glFrontFace(GL_CCW);
-		glCullFace(GL_BACK);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 		setWireframe(false);
@@ -87,6 +91,14 @@ public final class Window {
 	
 	public void setWireframe(boolean wireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, (wireframe) ? GL_LINE : GL_FILL);
+	}
+	
+	public void setDrawBothFaces(boolean drawBoth) {
+		if (drawBoth) {
+			glDisable(GL_CULL_FACE);
+		} else {
+			glEnable(GL_CULL_FACE);
+		}
 	}
 	
 	// Shows the window

@@ -18,6 +18,9 @@ public final class BlockState {
 	}
 	
 	public boolean isSame(BlockState other) {
+		if (other == null || other.block == null) {
+			return false;
+		}
 		return other.block.equals(block);
 	}
 	

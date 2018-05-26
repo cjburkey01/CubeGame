@@ -6,11 +6,11 @@ import org.joml.Vector3f;
 
 public final class MeshBuilder {
 	
-	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f right, Vector3f up, Vector2f minUv, Vector2f maxUv) {
-		addQuad(mesh, bLCorner, new Vector3f(bLCorner).add(right), new Vector3f(bLCorner).add(right).add(up), new Vector3f(bLCorner).add(up), minUv, maxUv);
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f right, Vector3f up, Vector3f normal, Vector2f minUv, Vector2f maxUv) {
+		addQuad(mesh, bLCorner, new Vector3f(bLCorner).add(right), new Vector3f(bLCorner).add(right).add(up), new Vector3f(bLCorner).add(up), normal, minUv, maxUv);
 	}
 	
-	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector2f minUv, Vector2f maxUv) {
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector3f normal, Vector2f minUv, Vector2f maxUv) {
 		// Starting index
 		int i = mesh.verts.size();
 		
@@ -29,9 +29,14 @@ public final class MeshBuilder {
 		mesh.uvs.add(new Vector2f(maxUv));
 		mesh.uvs.add(new Vector2f(maxUv.x, minUv.y));
 		mesh.uvs.add(new Vector2f(minUv));
+		
+		// Normals
+		for (int a = 0; a < 4; a ++) {
+			mesh.normals.add(normal);
+		}
 	}
 	
-	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector3f color) {
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector3f normal, Vector3f color) {
 		// Starting index
 		int i = mesh.verts.size();
 		
@@ -43,13 +48,15 @@ public final class MeshBuilder {
 		
 		// Indices
 		mesh.inds.addAll(Arrays.asList(i, i + 1, i + 2,
-									   i, i + 2, i + 3));
+                                       i, i + 2, i + 3));
 		
-		// Colors
-		mesh.colors.add(new Vector3f(color));
-		mesh.colors.add(new Vector3f(color));
-		mesh.colors.add(new Vector3f(color));
-		mesh.colors.add(new Vector3f(color));
+		for (int a = 0; a < 4; a ++) {
+			// Colors
+			mesh.colors.add(new Vector3f(color));
+
+			// Normals
+			mesh.normals.add(normal);
+		}
 	}
 	
 	public static Vector3f right() {

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import com.cjburkey.cubegame.object.Camera;
@@ -64,6 +66,22 @@ public final class ShaderProgram {
 	public void setUniform(String name, float value) {
 		if (uniforms.containsKey(name)) {
 			glUniform1f(uniforms.get(name), value);
+			return;
+		}
+		Debug.warn("Shader uniform not found: " + name);
+	}
+	
+	public void setUniform(String name, Vector2f value) {
+		if (uniforms.containsKey(name)) {
+			glUniform2f(uniforms.get(name), value.x, value.y);
+			return;
+		}
+		Debug.warn("Shader uniform not found: " + name);
+	}
+	
+	public void setUniform(String name, Vector3f value) {
+		if (uniforms.containsKey(name)) {
+			glUniform3f(uniforms.get(name), value.x, value.y, value.z);
 			return;
 		}
 		Debug.warn("Shader uniform not found: " + name);

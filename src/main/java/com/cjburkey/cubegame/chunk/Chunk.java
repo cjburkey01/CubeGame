@@ -1,5 +1,6 @@
 package com.cjburkey.cubegame.chunk;
 
+import java.util.Arrays;
 import com.cjburkey.cubegame.block.Block;
 import com.cjburkey.cubegame.block.BlockPos;
 import com.cjburkey.cubegame.block.BlockState;
@@ -11,6 +12,9 @@ public class Chunk {
 	
 	public final World world;
 	public final BlockPos chunkPos;
+
+	private boolean generating = false;
+	private boolean generated = false;
 	
 	public Chunk(World world, BlockPos chunkPos) {
 		this.world = world;
@@ -46,6 +50,55 @@ public class Chunk {
 	
 	private int getIndex(BlockPos blockPos) {
 		return blockPos.getZ() * World.BLOCKS_PER_CHUNK * World.BLOCKS_PER_CHUNK + blockPos.getY() * World.BLOCKS_PER_CHUNK + blockPos.getX();
+	}
+	
+	public void markGenerating() {
+		generating = true;
+	}
+	
+	public void markGenerated() {
+		generating = false;
+		generated = true;
+	}
+	
+	public boolean getGenerating() {
+		return generating;
+	}
+	
+	public boolean getGenerated() {
+		return generated;
+	}
+	
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(blocks);
+		result = prime * result + ((chunkPos == null) ? 0 : chunkPos.hashCode());
+		result = prime * result + ((world == null) ? 0 : world.hashCode());
+		return result;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Chunk other = (Chunk) obj;
+		if (!Arrays.equals(blocks, other.blocks))
+			return false;
+		if (chunkPos == null) {
+			if (other.chunkPos != null)
+				return false;
+		} else if (!chunkPos.equals(other.chunkPos))
+			return false;
+		if (world == null) {
+			if (other.world != null)
+				return false;
+		} else if (!world.equals(other.world))
+			return false;
+		return true;
 	}
 	
 }

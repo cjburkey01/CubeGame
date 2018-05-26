@@ -63,7 +63,7 @@ public final class CubeGame {
 	
 	// Called before the game loop is begun
 	private static void preinit() {
-		window = new Window("Loading...", 32, 32, true);
+		window = new Window("Loading...", 32, 32, true, 4);
 		if (!window.isValidWindow()) {
 			Debug.error("Window did not initialize");
 			stopGameLoop();

@@ -20,4 +20,12 @@ public final class Mathf {
 		return rad / pi * 180.0f;
 	}
 	
+	public static int floor(float in) {
+		return (int) Math.floor(in);
+	}
+	
+	public static int floor(double in) {
+		return (int) Math.floor(in);
+	}
+	
 }

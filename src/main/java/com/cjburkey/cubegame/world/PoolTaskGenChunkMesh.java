@@ -18,12 +18,19 @@ public final class PoolTaskGenChunkMesh implements IPoolTask {
 	}
 	
 	public void execute() {
+		if (chunk == null || !chunk.getGenerated() || chunk.world.hasRenderedChunk(chunk.chunkPos)) {
+			return;
+		}
 		ChunkMeshBuilder.greedyMeshChunk(meshData, chunk);
 		chunk.world.onFinishMesh(this);
 	}
 	
 	public MeshData getMesh() {
 		return meshData;
+	}
+	
+	public Chunk getChunk() {
+		return chunk;
 	}
 	
 	public int hashCode() {

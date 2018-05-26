@@ -1,6 +1,8 @@
 package com.cjburkey.cubegame.chunk;
 
 import java.util.Arrays;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import com.cjburkey.cubegame.block.Block;
 import com.cjburkey.cubegame.block.BlockPos;
 import com.cjburkey.cubegame.block.BlockState;
@@ -67,6 +69,12 @@ public class Chunk {
 	
 	public boolean getGenerated() {
 		return generated;
+	}
+	
+	public Vector3f getCenter() {
+		Vector3i corner = World.getBlockFromChunk(chunkPos).getPos();
+		float h = World.BLOCKS_PER_CHUNK / 2.0f;
+		return new Vector3f(corner.x + h, corner.y + h, corner.z + h);
 	}
 	
 	public int hashCode() {

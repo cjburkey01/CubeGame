@@ -1,9 +1,8 @@
 package com.cjburkey.cubegame.thread;
 
 import java.util.HashSet;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import com.cjburkey.cubegame.Debug;
 
 public final class ThreadedPoolWorker<T extends IPoolTask> {
@@ -12,13 +11,17 @@ public final class ThreadedPoolWorker<T extends IPoolTask> {
 	public final String name;
 	
 	private final Set<Thread> threads = new HashSet<>();
-	private final Queue<T> queue = new ConcurrentLinkedQueue<>();
+	private final LinkedBlockingDeque<T> queue = new LinkedBlockingDeque<>();
 	private boolean running = false;
 	private int finished = 0;
 	
 	public ThreadedPoolWorker(String name, int threadCount) {
 		this.name = name;
 		this.threadCount = threadCount;
+	}
+	
+	public int getItemsInQueue() {
+		return queue.size();
 	}
 	
 	public void start() {
@@ -29,12 +32,12 @@ public final class ThreadedPoolWorker<T extends IPoolTask> {
 			thread.setName("\"" + name + "\" worker " + i);
 			threads.add(thread);
 		}
-		Debug.log("Started pool: {}", name);
+		Debug.log("Started thread pool: {}", name);
 	}
 	
 	public void stop() {
 		running = false;
-		Debug.log("Stopping pool: {}", name);
+		Debug.log("Stopping thread pool: {}", name);
 		
 		// Safely clear it in case some threads haven't shut down yet
 		while (queue.size() > 0) {

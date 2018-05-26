@@ -4,5 +4,6 @@ package com.cjburkey.cubegame.thread;
 public interface IPoolTask {
 	
 	void execute();
+	boolean equals(Object other);
 	
 }

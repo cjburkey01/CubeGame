@@ -15,6 +15,7 @@ import com.cjburkey.cubegame.mesh.DirectionalLight;
 import com.cjburkey.cubegame.object.Camera;
 import com.cjburkey.cubegame.object.GameObject;
 import com.cjburkey.cubegame.object.Scene;
+import com.cjburkey.cubegame.world.ChunkGeneratorDefault;
 import com.cjburkey.cubegame.world.World;
 
 @EventListener
@@ -30,7 +31,7 @@ public class GameHandler {
 	private FreeMoveController camController;
 	private World world;
 	
-	public static final DirectionalLight sun = new DirectionalLight(new Vector3f(0.5f, 0.5f, 0.5f), /*new Vector3f(1.0f, -5.0f, 2.0f).normalize()*/new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(0.8f, 0.8f, 0.8f), 0.85f, 0.0f, 0.0f);
+	public static final DirectionalLight sun = new DirectionalLight(new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.2f, -1.0f, 0.0f).normalize(), new Vector3f(0.8f, 0.8f, 0.8f), 0.85f);
 	
 	@EventHandler
 	private void preinit(EventGamePreInit e) {
@@ -51,20 +52,9 @@ public class GameHandler {
 		voxelShader.addUniform("dirLightDirection");
 		voxelShader.addUniform("dirLightColor");
 		voxelShader.addUniform("dirLightIntensity");
-		voxelShader.addUniform("specularPower");
-		voxelShader.addUniform("reflectance");
 		voxelShader.bind();
 		
-		world = new World();
-		
-		for (int x = -testRadius; x <= testRadius; x ++) {
-			for (int z = -testRadius; z <= testRadius; z ++) {
-				for (int y = -testRadius; y <= testRadius; y ++) {
-					// Create chunk mesh
-					world.getChunkOrCreateScheduleGenerate(new BlockPos(x, y, z), true);
-				}
-			}
-		}
+		world = new World(new ChunkGeneratorDefault());
 	}
 	
 	@EventHandler
@@ -72,12 +62,22 @@ public class GameHandler {
 		Debug.log("Initializing CubeGame");
 		
 		Debug.log(" -- CONTROLS --");
-		Debug.log("    - !!! Use WASD and mouse to move and look respectively");
+		Debug.log("    - !!! Use WASD and mouse to move and look, respectively");
 		Debug.log("    - !!! Press escape to free cursor");
 		Debug.log("    - !!! Press alt+escape to close game (or click the X on the window)");
 		Debug.log("    - !!! Press x to toggle wireframe mode");
 		Debug.log("    - !!! Press z to toggle double face mode");
 		Debug.log(" -- END CONTROLS --");
+		
+		for (int x = -testRadius; x <= testRadius; x ++) {
+			for (int z = -testRadius; z <= testRadius; z ++) {
+				for (int y = -testRadius; y <= testRadius; y ++) {
+					// Create chunk mesh
+					BlockPos p = new BlockPos(x, y, z);
+					world.getChunkOrCreateAndScheduleGenerate(p, () -> world.scheduleChunkMeshing(p));
+				}
+			}
+		}
 	}
 	
 	@EventHandler
@@ -87,8 +87,6 @@ public class GameHandler {
 		voxelShader.setUniform("dirLightDirection", sun.direction);
 		voxelShader.setUniform("dirLightColor", sun.color);
 		voxelShader.setUniform("dirLightIntensity", sun.intensity);
-		voxelShader.setUniform("specularPower", sun.specularPower);
-		voxelShader.setUniform("reflectance", sun.reflectance);
 		
 		if (Input.getOnKeyDown(GLFW.GLFW_KEY_X)) {
 			Debug.log("{} wireframe", ((wireFrame) ? "Disabling" : "Enabling"));

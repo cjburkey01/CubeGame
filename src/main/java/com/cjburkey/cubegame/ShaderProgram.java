@@ -161,7 +161,8 @@ public final class ShaderProgram {
 		linkedShaders.add(this);
 		if (transforms) {
 			addUniform("projectionMatrix");
-			addUniform("modelViewMatrix");
+			addUniform("viewMatrix");
+			addUniform("modelMatrix");
 		}
 	}
 	

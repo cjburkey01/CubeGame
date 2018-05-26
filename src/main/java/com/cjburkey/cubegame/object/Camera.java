@@ -43,10 +43,6 @@ public final class Camera extends Component {
 		return new Matrix4f(modelMatrix);
 	}
 	
-	public Matrix4f getModelViewMatrix(Transform object) {
-		return getViewMatrix().mul(getModelMatrix(object));
-	}
-	
 	@EventHandler
 	private void updateWindowSize(EventWindowResize e) {
 		aspectRatio = (float) e.width / e.height;

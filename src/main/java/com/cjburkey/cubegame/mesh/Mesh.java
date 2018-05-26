@@ -54,7 +54,8 @@ public abstract class Mesh {
 	public final void render(Transform transformation) {
 		bindShader();
 		if (ShaderProgram.getCurrentShader() != null && ShaderProgram.getCurrentShader().transforms && transformation != null && Camera.getMainCamera() != null) {
-			ShaderProgram.getCurrentShader().setUniform("modelViewMatrix", Camera.getMainCamera().getModelViewMatrix(transformation));
+			ShaderProgram.getCurrentShader().setUniform("viewMatrix", Camera.getMainCamera().getViewMatrix());
+			ShaderProgram.getCurrentShader().setUniform("modelMatrix", Camera.getMainCamera().getModelMatrix(transformation));
 		}
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);

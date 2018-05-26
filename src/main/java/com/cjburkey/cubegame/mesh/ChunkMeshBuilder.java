@@ -17,7 +17,6 @@ public final class ChunkMeshBuilder {
 	// Creates an algorithm that is more locally efficient
 	// May not (probably will not) be the BEST mesh, but it
 	// Will be as good as it gets with the speed/efficiency ratio
-	//// TODO: CROSS-CHUNK BLOCK CHECKING
 	public static void greedyMeshChunk(MeshData mesh, Chunk chunk) {
 		Vector3i chunkWorldPos = World.getBlockFromChunk(chunk.chunkPos).getPos();
 		

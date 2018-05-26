@@ -1,13 +1,13 @@
 package com.cjburkey.cubegame.world;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingDeque;
 import org.joml.Vector3i;
 import com.cjburkey.cubegame.block.BlockPos;
 import com.cjburkey.cubegame.block.BlockState;
-import com.cjburkey.cubegame.block.Direction;
 import com.cjburkey.cubegame.chunk.Chunk;
 import com.cjburkey.cubegame.event.EventHandler;
 import com.cjburkey.cubegame.event.EventSystem;
@@ -15,6 +15,7 @@ import com.cjburkey.cubegame.event.game.EventGameExit;
 import com.cjburkey.cubegame.event.game.EventGameInit;
 import com.cjburkey.cubegame.event.game.EventGameUpdate;
 import com.cjburkey.cubegame.mesh.MeshVoxel;
+import com.cjburkey.cubegame.object.GameObject;
 import com.cjburkey.cubegame.object.MeshFilter;
 import com.cjburkey.cubegame.object.Scene;
 import com.cjburkey.cubegame.thread.ThreadedPoolWorker;
@@ -22,16 +23,18 @@ import com.cjburkey.cubegame.thread.ThreadedPoolWorker;
 public final class World {
 	
 	public static final int BLOCKS_PER_CHUNK = 1 << 4;
-	public static final IWorldGenerator generator = new WorldGeneratorDefault();
-	private final ThreadedPoolWorker<PoolTaskChunkGen> generationPool = new ThreadedPoolWorker<>("ChunkGen", 128);
+	
+	private final ThreadedPoolWorker<PoolTaskChunkGen> generationPool = new ThreadedPoolWorker<>("ChunkGen", 4);
 	private final ThreadedPoolWorker<PoolTaskGenChunkMesh> meshingPool = new ThreadedPoolWorker<>("ChunkMesh", 4);
-	
 	private final Map<BlockPos, Chunk> generatedChunks = new HashMap<>();
-	private final Queue<BlockPos> chunksToMesh = new ConcurrentLinkedQueue<>();
-	private final Queue<PoolTaskGenChunkMesh> chunksDoneMeshing = new ConcurrentLinkedQueue<>();
+	private final Map<BlockPos, RenderedChunk> renderedChunks = new HashMap<>();
+	private final LinkedBlockingDeque<BlockPos> chunksToMesh = new LinkedBlockingDeque<>();
+	private final LinkedBlockingDeque<PoolTaskGenChunkMesh> chunksDoneMeshing = new LinkedBlockingDeque<>();
+	public final IChunkGenerator generator;
 	
-	public World() {
+	public World(IChunkGenerator generator) {
 		EventSystem.MAIN_HANDLER.registerHandler(this);
+		this.generator = generator;
 	}
 	
 	@EventHandler
@@ -48,53 +51,26 @@ public final class World {
 	
 	@EventHandler
 	private void update(EventGameUpdate e) {
-		checkChunkMeshingProcess();
-		checkChunkGenerationProcess();
+		beginMeshingQueuedGeneratedChunks();
+		spawnQueuedGeneratedChunks();
 	}
 	
-	private void checkChunkMeshingProcess() {
-		Queue<BlockPos> chunksToTryMeshNext = new ConcurrentLinkedQueue<>();
+	private void beginMeshingQueuedGeneratedChunks() {
+		Set<BlockPos> chunksToTryMeshNext = new HashSet<>();
 		while(chunksToMesh.size() > 0) {
 			BlockPos chunk = chunksToMesh.poll();
 			if (chunk != null) {
+				if (hasRenderedChunk(chunk)) {
+					continue;
+				}
 				boolean tryAgain = false;
 				Chunk at = getChunkOrNull(chunk);
-				Chunk atN = getChunkOrNull(Direction.NORTH.add(chunk));
-				Chunk atS = getChunkOrNull(Direction.SOUTH.add(chunk));
-				Chunk atE = getChunkOrNull(Direction.EAST.add(chunk));
-				Chunk atW = getChunkOrNull(Direction.WEST.add(chunk));
-				Chunk atU = getChunkOrNull(Direction.UP.add(chunk));
-				Chunk atD = getChunkOrNull(Direction.DOWN.add(chunk));
 				if (at == null) {
-					getChunkOrCreateScheduleGenerate(chunk, false);
+					getChunkOrCreateAndScheduleGenerate(chunk);
 					tryAgain = true;
 				}
-				if (atN == null) {
-					getChunkOrCreateScheduleGenerate(Direction.NORTH.add(chunk), false);
-					tryAgain = true;
-				}
-				if (atS == null) {
-					getChunkOrCreateScheduleGenerate(Direction.SOUTH.add(chunk), false);
-					tryAgain = true;
-				}
-				if (atE == null) {
-					getChunkOrCreateScheduleGenerate(Direction.EAST.add(chunk), false);
-					tryAgain = true;
-				}
-				if (atW == null) {
-					getChunkOrCreateScheduleGenerate(Direction.WEST.add(chunk), false);
-					tryAgain = true;
-				}
-				if (atU == null) {
-					getChunkOrCreateScheduleGenerate(Direction.UP.add(chunk), false);
-					tryAgain = true;
-				}
-				if (atD == null) {
-					getChunkOrCreateScheduleGenerate(Direction.DOWN.add(chunk), false);
-					tryAgain = true;
-				}
-				if (tryAgain || !at.getGenerated() || !atN.getGenerated() || !atS.getGenerated() || !atE.getGenerated() || !atW.getGenerated() || !atU.getGenerated() || !atD.getGenerated()) {
-					chunksToTryMeshNext.offer(chunk);
+				if (tryAgain || !at.getGenerated()) {
+					chunksToTryMeshNext.add(chunk);
 					continue;
 				}
 				meshingPool.addTask(new PoolTaskGenChunkMesh(getChunkOrNull(chunk)));
@@ -105,25 +81,49 @@ public final class World {
 		}
 	}
 	
-	private void checkChunkGenerationProcess() {
+	private void spawnQueuedGeneratedChunks() {
 		while (chunksDoneMeshing.size() > 0) {
 			PoolTaskGenChunkMesh task = chunksDoneMeshing.poll();
 			if (task != null) {
+				if (hasRenderedChunk(task.getChunk().chunkPos)) {
+					continue;
+				}
+				
+				// Create and upload the mesh
 				MeshVoxel mesh = new MeshVoxel();
 				mesh.setMesh(task.getMesh());
-				MeshFilter meshFilter = Scene.createObject().addComponent(new MeshFilter());
+				
+				// Add it to the chunk object in the world
+				GameObject obj = Scene.createObject();
+				MeshFilter meshFilter = obj.addComponent(new MeshFilter());
 				meshFilter.setMesh(mesh);
+				RenderedChunk rchunk = obj.addComponent(new RenderedChunk(task.getChunk()));
+				renderedChunks.put(task.getChunk().chunkPos, rchunk);
 			}
 		}
 	}
 	
-	public Chunk getChunkOrCreateScheduleGenerate(BlockPos chunkPos, boolean render) {
+	public boolean hasRenderedChunk(BlockPos chunkPos) {
+		return renderedChunks.containsKey(chunkPos);
+	}
+	
+	public RenderedChunk getRenderedChunk(BlockPos chunkPos) {
+		if (!hasRenderedChunk(chunkPos)) {
+			return null;
+		}
+		return renderedChunks.get(chunkPos);
+	}
+	
+	public Chunk getChunkOrCreateAndScheduleGenerate(BlockPos chunkPos) {
+		return getChunkOrCreateAndScheduleGenerate(chunkPos, () -> {  });
+	}
+	
+	public Chunk getChunkOrCreateAndScheduleGenerate(BlockPos chunkPos, Runnable ifGeneratedOnDone) {
 		if (generatedChunks.containsKey(chunkPos)) {
 			return generatedChunks.get(chunkPos);
 		}
 		Chunk chunk = new Chunk(this, chunkPos);
-		//generator.generateChunk(chunk);
-		scheduleChunkGenerate(chunk, render, () -> {  });
+		scheduleChunkGenerate(chunk, ifGeneratedOnDone);
 		generatedChunks.put(chunkPos, chunk);
 		return chunk;
 	}
@@ -146,12 +146,12 @@ public final class World {
 	public boolean getIsTransparentAt(BlockPos pos) {
 		Chunk chunk = getChunkOrNull(getChunkFromBlock(pos));
 		if (chunk == null) {
-			return true;
+			return false;
 		}
 		return chunk.getIsTransparentAt(getBlockPositionInChunk(pos));
 	}
 	
-	public void scheduleChunkGenerate(Chunk chunk, boolean render, Runnable onDone) {
+	public void scheduleChunkGenerate(Chunk chunk, Runnable onDone) {
 		if (chunk.getGenerating()) {
 			return;
 		}
@@ -159,19 +159,15 @@ public final class World {
 			generatedChunks.put(chunk.chunkPos, chunk);
 		}
 		chunk.markGenerating();
-		generationPool.addTask(new PoolTaskChunkGen(generator, chunk, render, onDone));
+		generationPool.addTask(new PoolTaskChunkGen(generator, chunk, onDone));
 	}
 	
-	public void scheduleChunkMeshing(Chunk chunk) {
-		//meshingPool.addTask(new PoolTaskGenChunkMesh(chunk));
-		chunksToMesh.add(chunk.chunkPos);
+	public void scheduleChunkMeshing(BlockPos chunk) {
+		chunksToMesh.add(chunk);
 	}
 	
-	public void onChunkGenerated(Chunk chunk, Runnable onDone, boolean render) {
+	public void onChunkGenerated(Chunk chunk, Runnable onDone) {
 		onDone.run();
-		if (render) {
-			scheduleChunkMeshing(chunk);
-		}
 	}
 	
 	public void onFinishMesh(PoolTaskGenChunkMesh task) {

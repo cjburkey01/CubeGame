@@ -33,6 +33,10 @@ public abstract class Block {
 		return new Vector3f().zero();
 	}
 	
+	public float getRenderColorRandomization(BlockState self) {
+		return 0.095f;
+	}
+	
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

@@ -36,7 +36,7 @@ public final class MeshBuilder {
 		}
 	}
 	
-	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector3f normal, Vector3f color) {
+	public static void addQuad(MeshData mesh, Vector3f bLCorner, Vector3f bRCorner, Vector3f tRCorner, Vector3f tLCorner, Vector3f normal, Vector3f color, float colorRandomness) {
 		// Starting index
 		int i = mesh.verts.size();
 		
@@ -53,7 +53,10 @@ public final class MeshBuilder {
 		for (int a = 0; a < 4; a ++) {
 			// Colors
 			mesh.colors.add(new Vector3f(color));
-
+			
+			// Color randomness
+			mesh.colorVariability.add(colorRandomness);
+			
 			// Normals
 			mesh.normals.add(normal);
 		}

@@ -34,4 +34,13 @@ public class BufferUtil {
 		return out;
 	}
 	
+	public static float[] getFloatArray(Collection<Float> collection) {
+		float[] out = new float[collection.size()];
+		int index = 0;
+		for (float i : collection) {
+			out[index ++] = i;
+		}
+		return out;
+	}
+	
 }

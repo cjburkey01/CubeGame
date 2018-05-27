@@ -33,7 +33,7 @@ public final class ChunkGeneratorDefault implements IChunkGenerator {
 						chunk.setBlock(new BlockPos(x, y, z), Blocks.blockGrass);
 						continue;
 					}
-					int dirt = RandomHandler.getMainInstance().betweenInc(layersOfDirt - 1, layersOfDirt + 1);
+					int dirt = RandomHandler.getMainInstance().betweenIncI(layersOfDirt - 1, layersOfDirt + 1);
 					if (y + chunkAt.y > noiseY - 1 - dirt) {
 						chunk.setBlock(new BlockPos(x, y, z), Blocks.blockDirt);
 						continue;

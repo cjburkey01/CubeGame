@@ -17,6 +17,7 @@ public class Chunk {
 
 	private boolean generating = false;
 	private boolean generated = false;
+	private boolean empty = true;
 	
 	public Chunk(World world, BlockPos chunkPos) {
 		this.world = world;
@@ -26,6 +27,9 @@ public class Chunk {
 	public void setBlock(BlockPos blockPos, Block block) {
 		if (!verifyPos(blockPos)) {
 			return;
+		}
+		if (block != null) {
+			empty = false;
 		}
 		blocks[getIndex(blockPos)] = (block == null) ? null : new BlockState(world, block, this, blockPos);
 	}
@@ -75,6 +79,10 @@ public class Chunk {
 		Vector3i corner = World.getBlockFromChunk(chunkPos).getPos();
 		float h = World.BLOCKS_PER_CHUNK / 2.0f;
 		return new Vector3f(corner.x + h, corner.y + h, corner.z + h);
+	}
+	
+	public boolean getEmpty() {
+		return empty;
 	}
 	
 	public int hashCode() {

@@ -73,7 +73,9 @@ public final class World {
 					chunksToTryMeshNext.add(chunk);
 					continue;
 				}
-				meshingPool.addTask(new PoolTaskGenChunkMesh(getChunkOrNull(chunk)));
+				if (!at.getEmpty()) {
+					meshingPool.addTask(new PoolTaskGenChunkMesh(getChunkOrNull(chunk)));
+				}
 			}
 		}
 		for (BlockPos pos : chunksToTryMeshNext) {

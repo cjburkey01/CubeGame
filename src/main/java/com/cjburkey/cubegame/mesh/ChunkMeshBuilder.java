@@ -72,7 +72,7 @@ public final class ChunkMeshBuilder {
 					}
 					end.y --;
 					
-					backFrontQuads.add(new Quad(new Vector2i(x, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.SOUTH), z));
+					backFrontQuads.add(new Quad(new Vector2i(x, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.SOUTH), z, atStart.block.getRenderColorRandomization(atStart)));
 				}
 			}
 		}
@@ -80,7 +80,7 @@ public final class ChunkMeshBuilder {
 			int lx = rlquad.end.x - rlquad.start.x + 1;
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.start.x, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.y);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, ly, 0), new Vector3f(start).add(0, ly, 0), MeshBuilder.backward(), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, ly, 0), new Vector3f(start).add(0, ly, 0), MeshBuilder.backward(), rlquad.color, rlquad.colorRandomness);
 		}
 	}
 	
@@ -117,7 +117,7 @@ public final class ChunkMeshBuilder {
 					}
 					end.y --;
 					
-					frontBackQuads.add(new Quad(new Vector2i(x, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.SOUTH), z));
+					frontBackQuads.add(new Quad(new Vector2i(x, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.SOUTH), z, atStart.block.getRenderColorRandomization(atStart)));
 				}
 			}
 		}
@@ -125,7 +125,7 @@ public final class ChunkMeshBuilder {
 			int lx = rlquad.end.x - rlquad.start.x + 1;
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.start.x + lx, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.y - 1.0f);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(-lx, 0, 0), new Vector3f(start).add(-lx, ly, 0), new Vector3f(start).add(0, ly, 0), MeshBuilder.forward(), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(-lx, 0, 0), new Vector3f(start).add(-lx, ly, 0), new Vector3f(start).add(0, ly, 0), MeshBuilder.forward(), rlquad.color, rlquad.colorRandomness);
 		}
 	}
 	
@@ -166,7 +166,7 @@ public final class ChunkMeshBuilder {
 					}
 					end.y --;
 					
-					bottomUpQuads.add(new Quad(new Vector2i(x, z), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.DOWN), y));
+					bottomUpQuads.add(new Quad(new Vector2i(x, z), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.DOWN), y, atStart.block.getRenderColorRandomization(atStart)));
 				}
 			}
 		}
@@ -174,7 +174,7 @@ public final class ChunkMeshBuilder {
 			int lx = tdquad.end.x - tdquad.start.x + 1;
 			int ly = tdquad.end.y - tdquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + tdquad.start.x, chunkWorldPos.y + tdquad.y, -chunkWorldPos.z - tdquad.start.y - ly);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, ly), new Vector3f(start).add(0, 0, ly), MeshBuilder.down(), tdquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, ly), new Vector3f(start).add(0, 0, ly), MeshBuilder.down(), tdquad.color, tdquad.colorRandomness);
 		}
 	}
 	
@@ -211,7 +211,7 @@ public final class ChunkMeshBuilder {
 					}
 					end.y --;
 					
-					leftRightQuads.add(new Quad(new Vector2i(z, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.WEST), x));
+					leftRightQuads.add(new Quad(new Vector2i(z, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.WEST), x, atStart.block.getRenderColorRandomization(atStart)));
 				}
 			}
 		}
@@ -219,7 +219,7 @@ public final class ChunkMeshBuilder {
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			int lz = rlquad.end.x - rlquad.start.x + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.y, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.start.x - lz);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, lz), new Vector3f(start).add(0, ly, lz), new Vector3f(start).add(0, ly, 0), MeshBuilder.left(), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, lz), new Vector3f(start).add(0, ly, lz), new Vector3f(start).add(0, ly, 0), MeshBuilder.left(), rlquad.color, rlquad.colorRandomness);
 		}
 	}
 	
@@ -256,7 +256,7 @@ public final class ChunkMeshBuilder {
 					}
 					end.y --;
 					
-					rightLeftQuads.add(new Quad(new Vector2i(z, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.EAST), x));
+					rightLeftQuads.add(new Quad(new Vector2i(z, y), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.EAST), x, atStart.block.getRenderColorRandomization(atStart)));
 				}
 			}
 		}
@@ -264,7 +264,7 @@ public final class ChunkMeshBuilder {
 			int ly = rlquad.end.y - rlquad.start.y + 1;
 			int lz = rlquad.end.x - rlquad.start.x + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + rlquad.y + 1.0f, chunkWorldPos.y + rlquad.start.y, -chunkWorldPos.z - rlquad.start.x);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, -lz), new Vector3f(start).add(0, ly, -lz), new Vector3f(start).add(0, ly, 0), MeshBuilder.right(), rlquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(0, 0, -lz), new Vector3f(start).add(0, ly, -lz), new Vector3f(start).add(0, ly, 0), MeshBuilder.right(), rlquad.color, rlquad.colorRandomness);
 		}
 	}
 	
@@ -305,7 +305,7 @@ public final class ChunkMeshBuilder {
 					}
 					end.y --;
 					
-					topDownQuads.add(new Quad(new Vector2i(x, z), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.UP), y));
+					topDownQuads.add(new Quad(new Vector2i(x, z), new Vector2i(end), atStart.block.getRenderColorForFace(atStart, Direction.UP), y, atStart.block.getRenderColorRandomization(atStart)));
 				}
 			}
 		}
@@ -313,7 +313,7 @@ public final class ChunkMeshBuilder {
 			int lx = tdquad.end.x - tdquad.start.x + 1;
 			int ly = tdquad.end.y - tdquad.start.y + 1;
 			Vector3f start = new Vector3f(chunkWorldPos.x + tdquad.start.x, chunkWorldPos.y + tdquad.y + 1.0f, -chunkWorldPos.z - tdquad.start.y);
-			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, -ly), new Vector3f(start).add(0, 0, -ly), MeshBuilder.up(), tdquad.color);
+			MeshBuilder.addQuad(mesh, new Vector3f(start), new Vector3f(start).add(lx, 0, 0), new Vector3f(start).add(lx, 0, -ly), new Vector3f(start).add(0, 0, -ly), MeshBuilder.up(), tdquad.color, tdquad.colorRandomness);
 		}
 	}
 	

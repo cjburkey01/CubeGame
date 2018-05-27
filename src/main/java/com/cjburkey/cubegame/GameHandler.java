@@ -21,7 +21,7 @@ import com.cjburkey.cubegame.world.World;
 @EventListener
 public class GameHandler {
 	
-	public static final int testRadius = 8;
+	public static final int testRadius = 0;
 	
 	private static ShaderProgram voxelShader;
 	//private static ShaderProgram dumbVoxelShader;
@@ -42,7 +42,8 @@ public class GameHandler {
 		Camera.setMainCamera(camObj.addComponent(new Camera()));
 		Camera.getMainCamera().setFovDegrees(90.0f);
 		camObj.transform.position.set(0.0f, 50.0f, 0.0f);
-		camController = camObj.addComponent(new FreeMoveController());
+		FreeMoveController cc = camController = camObj.addComponent(new FreeMoveController());
+		cc.moveSpeed = 25.0f;
 		
 		voxelShader = new ShaderProgram(true);
 		voxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("res/shader/voxel/voxelChunkVert.glsl"));

@@ -2,6 +2,7 @@ package com.cjburkey.cubegame;
 
 import java.util.Collection;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 public class BufferUtil {
@@ -23,6 +24,15 @@ public class BufferUtil {
 			vecfs[3 * i + 2] = vecs[i].z;
 		}
 		return vecfs;
+	}
+	
+	public static int[] getVec2iBuffer(Vector2i[] vecs) {
+		int[] vecis = new int[vecs.length * 2];
+		for (int i = 0; i < vecs.length; i ++) {
+			vecis[3 * i] = vecs[i].x;
+			vecis[3 * i + 1] = vecs[i].y;
+		}
+		return vecis;
 	}
 	
 	public static int[] getIntArray(Collection<Integer> collection) {

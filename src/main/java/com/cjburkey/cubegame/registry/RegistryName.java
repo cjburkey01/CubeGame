@@ -1,13 +1,13 @@
-package com.cjburkey.cubegame;
+package com.cjburkey.cubegame.registry;
 
 import java.util.regex.Pattern;
 
-public class Resource {
+public class RegistryName {
 	
 	public final String domain;
 	public final String path;
 	
-	public Resource(String domain, String path) {
+	public RegistryName(String domain, String path) {
 		this.domain = domain;
 		
 		path = path.trim().replaceAll(Pattern.quote("\\"), "/");
@@ -35,7 +35,7 @@ public class Resource {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Resource other = (Resource) obj;
+		RegistryName other = (RegistryName) obj;
 		if (domain == null) {
 			if (other.domain != null)
 				return false;

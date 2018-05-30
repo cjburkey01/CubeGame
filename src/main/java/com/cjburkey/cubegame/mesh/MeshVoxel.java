@@ -74,4 +74,10 @@ public class MeshVoxel extends Mesh {
 		glDisableVertexAttribArray(1);
 	}
 	
+	protected void customDestroy() {
+		glDeleteBuffers(cbo);
+		glDeleteBuffers(nbo);
+		glDeleteBuffers(crbo);
+	}
+	
 }

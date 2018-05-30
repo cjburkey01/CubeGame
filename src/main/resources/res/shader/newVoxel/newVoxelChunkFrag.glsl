@@ -31,27 +31,10 @@ vec4 calcDirectionalLight(vec3 light_colour, float light_intensity, vec3 light_d
 }
 
 void main() {
-	float epsilona = 0.025;
-	float epsilonb = 0.0001;
-	
-	ambientC = vec4(color, 1.0);
+	ambientC = vec4(color, 1.0);	// TODO: GET TEXEL
 	diffuseC = ambientC;
 	speculrC = ambientC;
 	vec4 diffuseSpecularComp = calcDirectionalLight(dirLightColor, dirLightIntensity, -dirLightDirection, mvVertexPos, mvVertexNormal);
 	
 	fragColor = ((ambientC * vec4(ambientLight, 1.0)) + diffuseSpecularComp);
-	
-	// Draw outlines around every block
-	float xx = fract(mvVertexPos.x);
-	float yy = fract(mvVertexPos.y);
-	float zz = fract(mvVertexPos.z);
-	bool nearX = (xx >= -epsilona && xx <= epsilona);
-	bool nearY = (yy >= -epsilona && yy <= epsilona);
-	bool nearZ = (zz >= -epsilona && zz <= epsilona);
-	bool overX = (xx >= -epsilonb && xx <= epsilonb);
-	bool overY = (yy >= -epsilonb && yy <= epsilonb);
-	bool overZ = (zz >= -epsilonb && zz <= epsilonb);
-	if ((nearX && !overX) || (nearY && !overY) || (nearZ && !overZ)) {
-		fragColor = vec4(color * vec3(0.5, 0.5, 0.5), 1.0);
-	}
 }

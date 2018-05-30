@@ -1,15 +1,23 @@
 package com.cjburkey.cubegame.block;
 
+import org.joml.Vector2i;
 import org.joml.Vector3f;
-import com.cjburkey.cubegame.Resource;
+import com.cjburkey.cubegame.registry.IRegistryObject;
+import com.cjburkey.cubegame.registry.RegistryName;
 
-public abstract class Block {
+public abstract class Block implements IRegistryObject {
 	
-	public final Resource resourcePath;
+	private final RegistryName resourcePath;
 	
-	protected Block(Resource resourcePath) {
+	protected Block(RegistryName resourcePath) {
 		this.resourcePath = resourcePath;
 	}
+	
+	public final RegistryName getRegistryName() {
+		return resourcePath;
+	}
+	
+	public abstract Vector2i getTexturePos();
 	
 	public void onUpdate(BlockState self) {
 	}

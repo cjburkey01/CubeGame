@@ -24,7 +24,7 @@ public class GameHandler {
 	public static final int testRadius = 0;
 	
 	private static ShaderProgram voxelShader;
-	//private static ShaderProgram dumbVoxelShader;
+	private static ShaderProgram newVoxelShader;
 	
 	private boolean wireFrame = false;
 	private boolean drawDoubleFace = false;
@@ -55,6 +55,16 @@ public class GameHandler {
 		voxelShader.addUniform("dirLightIntensity");
 		voxelShader.bind();
 		
+		newVoxelShader = new ShaderProgram(true);
+		newVoxelShader.addShader(GL20.GL_VERTEX_SHADER, FileUtil.readFileText("res/shader/newVoxel/newVoxelChunkVert.glsl"));
+		newVoxelShader.addShader(GL20.GL_FRAGMENT_SHADER, FileUtil.readFileText("res/shader/newVoxel/newVoxelChunkFrag.glsl"));
+		newVoxelShader.link();
+		newVoxelShader.addUniform("ambientLight");
+		newVoxelShader.addUniform("dirLightDirection");
+		newVoxelShader.addUniform("dirLightColor");
+		newVoxelShader.addUniform("dirLightIntensity");
+		newVoxelShader.bind();
+		
 		world = new World(new ChunkGeneratorDefault());
 	}
 	
@@ -70,12 +80,14 @@ public class GameHandler {
 		Debug.log("    - !!! Press z to toggle double face mode");
 		Debug.log(" -- END CONTROLS --");
 		
-		for (int x = -testRadius; x <= testRadius; x ++) {
-			for (int z = -testRadius; z <= testRadius; z ++) {
-				for (int y = -testRadius; y <= testRadius; y ++) {
-					// Create chunk mesh
-					BlockPos p = new BlockPos(x, y, z);
-					world.getChunkOrCreateAndScheduleGenerate(p, () -> world.scheduleChunkMeshing(p));
+		for (int rad = 0; rad <= testRadius; rad ++) {
+			for (int x = -rad; x <= rad; x ++) {
+				for (int z = -rad; z <= rad; z ++) {
+					for (int y = -rad; y <= rad; y ++) {
+						// Create chunk mesh
+						BlockPos p = new BlockPos(x, y, z);
+						world.getChunkOrCreateAndScheduleGenerate(p, () -> world.scheduleChunkMeshing(p));
+					}
 				}
 			}
 		}
@@ -88,6 +100,11 @@ public class GameHandler {
 		voxelShader.setUniform("dirLightDirection", sun.direction);
 		voxelShader.setUniform("dirLightColor", sun.color);
 		voxelShader.setUniform("dirLightIntensity", sun.intensity);
+		
+		newVoxelShader.setUniform("ambientLight", sun.ambientLight);
+		newVoxelShader.setUniform("dirLightDirection", sun.direction);
+		newVoxelShader.setUniform("dirLightColor", sun.color);
+		newVoxelShader.setUniform("dirLightIntensity", sun.intensity);
 		
 		if (Input.getOnKeyDown(GLFW.GLFW_KEY_X)) {
 			Debug.log("{} wireframe", ((wireFrame) ? "Disabling" : "Enabling"));
@@ -122,6 +139,10 @@ public class GameHandler {
 	
 	public static ShaderProgram getVoxelShader() {
 		return voxelShader;
+	}
+	
+	public static ShaderProgram getNewVoxelShader() {
+		return newVoxelShader;
 	}
 	
 }

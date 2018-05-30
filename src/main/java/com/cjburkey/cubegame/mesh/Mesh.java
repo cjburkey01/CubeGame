@@ -69,6 +69,18 @@ public abstract class Mesh {
 		unbindShader();
 	}
 	
+	public final void destroy() {
+		glDisableVertexAttribArray(0);
+		glBindVertexArray(0);
+		glDeleteBuffers(vbo);
+		glDeleteBuffers(ebo);
+		glDeleteVertexArrays(vao);
+		inds = 0;
+		hasInit = false;
+		
+		customDestroy();
+	}
+	
 	// Generate custom buffers
 	protected void generateBuffers() {
 	}
@@ -88,6 +100,10 @@ public abstract class Mesh {
 	
 	// Override if there is a custom rendering behavior that does not interfere with the draw call
 	protected void customPostRender() {
+	}
+	
+	// Override if there is a custom clean up behavior
+	protected void customDestroy() {
 	}
 	
 	protected abstract void bindShader();

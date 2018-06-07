@@ -13,7 +13,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
-import com.cjburkey.cubegame.object.Camera;
 
 public final class ShaderProgram {
 	
@@ -39,6 +38,7 @@ public final class ShaderProgram {
 		valid = true;
 	}
 	
+	// Registers a uniform in the shader
 	public void addUniform(String name) {
 		if (!valid) {
 			Debug.error("Cannot add uniform to an invalid shader program ");
@@ -54,6 +54,8 @@ public final class ShaderProgram {
 		}
 		uniforms.put(name, loc);
 	}
+	
+	// Sets uniforms in the shader
 	
 	public void setUniform(String name, int value) {
 		if (uniforms.containsKey(name)) {
@@ -105,6 +107,7 @@ public final class ShaderProgram {
 		Debug.warn("Shader uniform not found: " + name);
 	}
 	
+	// Adds shaders to the shader program
 	public void addShader(int type, String source) {
 		if (!valid) {
 			Debug.error("Cannot add shader to invalid shader program");
@@ -132,6 +135,7 @@ public final class ShaderProgram {
 		shaders.put(type, shader);
 	}
 	
+	// Links the program
 	public void link() {
 		if (!valid) {
 			Debug.error("Cannot link invalid shader program");
@@ -166,6 +170,7 @@ public final class ShaderProgram {
 		}
 	}
 	
+	// Destroys the shader program
 	public void destroy() {
 		unbind();
 		
@@ -173,14 +178,13 @@ public final class ShaderProgram {
 		glDeleteProgram(program);
 	}
 	
+	// Binds the program
 	public void bind() {
 		glUseProgram(program);
 		currentShader = this;
-		if (Camera.getMainCamera() != null) {
-			setUniform("projectionMatrix", Camera.getMainCamera().getProjectionMatrix());
-		}
 	}
 	
+	// Unbinds the current program
 	public static void unbind() {
 		glUseProgram(0);
 		currentShader = null;
